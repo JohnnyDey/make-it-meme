@@ -1,0 +1,28 @@
+@font-face {
+    font-family: "RubikMonoOne-Regular";
+    src: url("RubikMonoOne-Regular.ttf");
+    font-style: normal;
+    font-weight: normal;
+    color: white;
+}
+h1 {
+    color: aqua;
+    font-size: 30px;
+    font-family: RubikMonoOne-Regular;
+}
+body {
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    font-family: RubikMonoOne-Regular;
+    color: white;
+}
+.background {
+    display: flex;
+    position: absolute;
+    align-content: center;
+    justify-items: center;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(360deg,#3C2974 30%, #7A0085 100%);
+}
