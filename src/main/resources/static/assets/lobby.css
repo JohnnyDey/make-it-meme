@@ -1,0 +1,94 @@
+.lobby
+{
+    display: grid;
+
+    width: 80%;
+    height: 80%;
+    min-height: 500px;
+    margin: auto;
+    padding: 0;
+
+    justify-items: center;
+    grid-template-columns: 30% calc(70% - 15px);
+    column-gap: 15px;
+}
+.lobby-settings-wrapper
+{
+    display: grid;
+
+    width: 100%;
+    height: 100%;
+
+    grid-template-rows: calc(100% - 85px) 70px;
+    row-gap: 15px;
+}
+.lobby-list
+{
+    display: grid;
+    align-content: flex-start;
+
+    width: 100%;
+    min-width: 160px;
+    height: 100%;
+
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, .3);
+
+    grid-template-rows: repeat(50px);
+    row-gap: 10px;
+    justify-items: center;
+}
+.lobby-settings
+{
+    width: 100%;
+    height: 100%;
+
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, .3);
+}
+.selecting-settings
+{
+    display: flex;
+
+    height: 40px;
+    padding: 20px;
+}
+.player
+{
+    display: grid;
+    align-content: center;
+    align-items: center;
+
+    width: 90%;
+    min-width: 150px;
+    height: 40px;
+
+    border: solid rgb(253, 253, 253) 2px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, .3);
+
+    grid-template-columns: 60px calc(100% - 60px);
+}
+
+.player-avatar
+{
+    width: 35px;
+    height: 35px;
+
+    border: solid white 2px;
+    border-radius: 100%;
+    background-color: rgba(255, 255, 255, .3);
+}
+
+.buttons-wrapper
+{
+    display: grid;
+    justify-content: center;
+
+    width: 80%;
+    height: 70px;
+    margin: auto;
+
+    gap: 10px;
+    grid-template-columns: 1fr 1fr;
+}

@@ -1,28 +1,203 @@
-@font-face {
-    font-family: "RubikMonoOne-Regular";
-    src: url("RubikMonoOne-Regular.ttf");
-    font-style: normal;
+@font-face
+{
+    font-family: 'RubikMonoOne-Regular';
     font-weight: normal;
+    font-style: normal;
+
     color: white;
+
+    src: url('RubikMonoOne-Regular.ttf');
 }
-h1 {
-    color: aqua;
-    font-size: 30px;
+h1
+{
     font-family: RubikMonoOne-Regular;
+    font-size: 30px;
+
+    color: aqua;
 }
-body {
-    gap: 0;
+body
+{
+    font-family: RubikMonoOne-Regular;
+
     margin: 0;
     padding: 0;
-    font-family: RubikMonoOne-Regular;
+
     color: white;
+
+    gap: 0;
 }
-.background {
-    display: flex;
+.background
+{
     position: absolute;
+
+    display: flex;
     align-content: center;
-    justify-items: center;
-    height: 100%;
+
     width: 100%;
-    background: linear-gradient(360deg,#3C2974 30%, #7A0085 100%);
+    height: 100%;
+
+    background: linear-gradient(360deg,#3c2974 30%, #7a0085 100%);
+
+    justify-items: center;
+}
+.button
+{
+    font-family: RubikMonoOne-Regular;
+    font-size: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 5px;
+
+    color: rgb(0, 0, 0);
+    border: solid 3px rgb(0, 0, 0);
+    border-radius: 10px;
+    background-color: rgb(255, 255, 255);
+}
+.button:hover
+{
+    cursor: pointer;
+
+    background-color: #dfdfdf;
+    box-shadow: 6px 6px 2px 1px rgba(0, 0, 0, .2);
+}
+
+select
+{
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+
+    z-index: 1;
+
+    width: 100%;
+    margin: 0;
+    padding: 0 1em 0 0;
+
+    cursor: inherit;
+
+    border: none;
+    outline: none;
+    background-color: transparent;
+
+    -webkit-appearance: none;
+       -moz-appearance: none;
+            appearance: none;
+}
+select::-ms-expand
+{
+    display: none;
+}
+
+.select
+{
+    font-size: 16px;
+    line-height: 1.1;
+
+    position: relative;
+
+    display: grid;
+    align-items: center;
+
+    width: calc(100% - 50px);
+    height: 35px;
+    padding: .25em .5em;
+
+    cursor: pointer;
+
+    border: 1px solid var(--select-border);
+    border-radius: .25em;
+    background-color: #fff;
+
+    grid-template-areas: 'select';
+}
+
+/* Наворовала и ниче не понимает */
+
+.container
+{
+    font-size: 22px;
+
+    position: relative;
+
+    display: block;
+
+    margin-bottom: 12px;
+    padding-left: 35px;
+
+    cursor: pointer;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+
+.container input
+{
+    position: absolute;
+
+    width: 0;
+    height: 0;
+
+    cursor: pointer;
+
+    opacity: 0;
+}
+
+.checkmark
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 25px;
+    height: 25px;
+
+    background-color: #eee;
+}
+
+.container:hover input ~ .checkmark
+{
+    background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark
+{
+    background-color: #21f372;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after
+{
+    position: absolute;
+
+    display: none;
+
+    content: '';
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after
+{
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+.container .checkmark:after
+{
+    top: 5px;
+    left: 9px;
+
+    width: 5px;
+    height: 10px;
+
+    -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+            transform: rotate(45deg);
+
+    border: solid white;
+    border-width: 0 3px 3px 0;
 }

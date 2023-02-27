@@ -9,11 +9,11 @@ class Main {
     const background = createElement('background');
     this.content.append(background);
 
-    const content = createElement('content');
+    const content = createElement('content-menu');
     background.append(content);
 
     const logo = createElement('logo', 'img');
-    logo.src = 'assets/Logo.png';
+    logo.src = 'assets/logo.png';
     content.append(logo);
 
     this.initProfile(content);

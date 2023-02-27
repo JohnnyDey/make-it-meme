@@ -1,0 +1,130 @@
+.content
+{
+    display: grid;
+    align-content: stretch;
+    align-items: center;
+
+    width: 80%;
+    min-width: 600px;
+    height: 80%;
+    min-height: 500px;
+    margin: auto;
+
+    background-color: rgba(255, 255, 255, .253);
+
+    grid-template-columns: 2fr 1fr;  gap: 10px;
+}
+.image
+{
+    width: 100%;
+    min-width: 600px;
+}
+.meme
+{
+    display: grid;
+    align-items: center;
+
+    width: 100%;
+    height: 100%;
+
+    background-color: white;
+
+    justify-items: center;
+}
+.make-text
+{
+    display: grid;
+
+    width: 100%;
+    max-height: 700px;
+
+    grid-template-rows: 1fr 1fr;
+}
+.start-button
+{
+    display: grid;
+    align-items: center;
+
+    width: 80%;  height: 60px;
+
+      -moz-user-select: none;
+           user-select: none;
+    text-align: center;
+
+    border: solid 2px black;
+    border-radius: 20px;
+    background-color: rgba(255, 0, 0, .6);
+
+    justify-items: center;
+    -khtml-user-select: none;
+}
+.start-button:hover
+{
+    cursor: pointer;
+
+    background-color: rgba(255, 0, 0, .75);
+    box-shadow: 6px 6px 2px 1px rgba(0, 0, 0, .2);
+}
+.text
+{
+    width: calc(100% - 40px);
+    min-height: 80px;
+    margin: 0;
+    padding: 12px 20px;
+
+    resize: none;
+
+    border: solid 2px black;
+    border-radius: 20px;
+    outline: none;
+    background-color: rgba(255, 255, 255, .6);
+}
+
+.parent-text
+{
+    min-height: 500px;
+    max-height: 720px;
+}
+
+
+.timer_items
+{
+    font-size: 48px;
+
+    position: absolute;
+    top: 20px;
+    right: 50px;
+
+    display: flex;
+}
+.timer_item
+{
+    position: relative;
+
+    min-width: 60px;
+    margin-right: 10px;
+    margin-left: 10px;
+    padding-bottom: 15px;
+
+    text-align: center;
+}
+.timer_item::before
+{
+    font-size: 14px;
+
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+
+    display: block;
+
+    content: attr(data-title);
+    transform: translateX(-50%);
+}
+.timer_item:not(:last-child)::after
+{
+    position: absolute;
+    right: -15px;
+
+    content: ':';
+}
