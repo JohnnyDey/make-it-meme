@@ -15,11 +15,9 @@ import java.util.List;
 @Controller
 public class LobbyController {
 
-    @Autowired
-    private SimpMessagingTemplate template;
+    @Autowired private SimpMessagingTemplate template;
 
-    @Autowired
-    private LobbyStorage lobbyStorage;
+    @Autowired private LobbyStorage lobbyStorage;
 
     @MessageMapping("/game/lobby/create")
     public void create(LobbyRequest request, Principal principal) {
@@ -37,6 +35,6 @@ public class LobbyController {
             throw new IllegalArgumentException("Player Already exists");
         }
         players.add(new Player(principal.getName(), request.getName()));
-        players.forEach(p -> template.convertAndSendToUser(p.getId(), "/lobby",  new LobbyRequest(lobby.toDto())));
+        players.forEach(p -> template.convertAndSendToUser(p.getId(), "/lobby", new LobbyRequest(lobby.toDto())));
     }
 }
