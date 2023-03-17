@@ -5,24 +5,17 @@ class Creation {
 
     initCreation() {
         this.content.empty();
-        const background = createElement('background');
-        this.content.append(background);
+        const content = createElement('content');
+        this.content.append(content);
 
-        const timer = createElement('timer');
-        background.append(timer);
-        const timerItems = createElement('timer_items');
-        timer.append(timerItems);
-        const minutes = createElement('timer_item');
-        timerItems.append(minutes);
-        this.minutes = $(minutes);
-        const seconds = createElement('timer_item');
-        timerItems.append(seconds);
-        this.seconds = $(seconds);
+        const container = createAndAppend('container py-5', content);
+        let row = createAndAppend('row justify-content-end', container);
+        let col = createAndAppend('col-auto timer', row);
+        this.time = $(createAndAppend('time', col));
         this.initTimer(this.lobby.config.timer || 0);
 
-        const content = createElement('content');
-        background.append(content);
-        this.initContent(content);
+        row = createAndAppend('row row-cols-1 row-cols-lg-2 justify-content-around gy-3', container);
+        this.initContent(row);
     }
 
     updateState(lobby) {
@@ -30,26 +23,25 @@ class Creation {
         this.initCreation();
         this.img = new Image();
         this.img.onload = () => {
+            this.ctx.canvas.width = this.img.naturalWidth;
+            this.ctx.canvas.height = this.img.naturalHeight;
             this.restartCanvas()
         };
+
         this.img.src = window.location + this.lobby.rounds[0].memes[0].img;
     }
 
     initContent(parent) {
-        const content = createElement('meme');
-        parent.append(content);
-        this.initCanvas(content);
+        let col = createAndAppend('col meme', parent);
+        this.initCanvas(col);
 
-        const textArea = createElement('make-text');
-        parent.append(textArea);
-        const parentText = createElement('parent-text')
-        textArea.append(parentText);
+        col = createAndAppend('col make-text', parent);
 
         let textCount = this.lobby.rounds[0].memes[0].caps.length;
         while (textCount > 0) {
             const text = createElement('text', 'textarea');
             text.placeholder = 'Текст ' + (this.lobby.rounds[0].memes[0].caps.length - textCount + 1);
-            parentText.append(text);
+            col.append(text);
             const cap = $(text);
             cap.bind('input propertychange', function() {
                 this.restartCanvas();
@@ -59,7 +51,7 @@ class Creation {
             }.bind(this));
             textCount--;
         }
-        textArea.append(createElement('start-button', 'button', 'Готово'));
+        col.append(createElement('start-button', 'button', 'Готово'));
     }
 
     initCanvas(parent) {
@@ -72,9 +64,10 @@ class Creation {
     initTimer(seconds) {
         let time = seconds;
         const intervalFunc = function() {
-            this.minutes.text(this.formatTime(Math.floor(time / 60)));
-            this.seconds.text(this.formatTime(time % 60));
-            if(time == 0) {
+            const min = this.formatTime(Math.floor(time / 60));
+            const sec = this.formatTime(time % 60);
+            this.time.text(min + ':' + sec);
+            if (time == 0) {
                 clearInterval(this.timer)
             }
             time--;

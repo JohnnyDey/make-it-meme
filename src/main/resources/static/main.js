@@ -6,59 +6,54 @@ class Main {
 
   initMainPage() {
     this.content.empty();
-    const background = createElement('background');
-    this.content.append(background);
+    const content = createElement('content');
+    this.content.append(content);
 
-    const content = createElement('content-menu');
-    background.append(content);
-
+    const container = createAndAppend('container py-5', content);
+    let row = createAndAppend('row row-cols-1 justify-content-center gy-5', container);
+    let col = createAndAppend('col d-flex justify-content-around', row);
     const logo = createElement('logo', 'img');
     logo.src = 'assets/logo.png';
-    content.append(logo);
+    col.append(logo);
 
-    this.initProfile(content);
-    this.initControl(content);
-  }
+    col = createAndAppend('col d-flex justify-content-around', row);
 
-  initProfile(parent){
-    const wrapper = createElement('registration');
-    parent.append(wrapper);
-
-    const avatar = createElement('avatar');
-    wrapper.append(avatar);
+    const avatar = createAndAppend('avatar', col);
     const avatarImg = createElement(null, 'img');
     avatarImg.src = 'assets/avatar1.png';
     avatar.append(avatarImg);
 
-    const arrow = createElement('arrow');
-    avatar.append(arrow);
+    const arrow = createAndAppend('arrow', avatar);
 
     const arrowImg = createElement(null, 'img');
     arrowImg.src = 'assets/arrow.png';
     arrowImg.height='30';
     arrow.append(arrowImg);
 
-    const nameInput = createElement('name', 'input');
+    col = createAndAppend('col-8 d-flex justify-content-around', row);
+
+    const nameInput = createElement('text', 'input');
     nameInput.type = 'text';
     nameInput.placeholder = 'Введите имя';
     nameInput.maxLength = 15;
-    wrapper.append(nameInput);
+    col.append(nameInput);
     this.nameInput = $(nameInput);
-  }
 
-  initControl(parent){
-    const wrapper = createElement('registration-buttons');
-    parent.append(wrapper);
+    col = createAndAppend('col', row);
 
-    const action = createElement('registration-button', null, 'Создать игру');
+    row = createAndAppend('row row-cols-2 justify-content-center', col);
+    col = createAndAppend('col-4 d-flex justify-content-around', row);
+
+    const action = createElement(null, 'button', 'Создать игру');
     this.action = $(action);
-    wrapper.append(action);
+    col.append(action);
 
-    const codeInput = createElement('name', 'input');
+    col = createAndAppend('col-4 d-flex justify-content-around', row);
+    const codeInput = createElement('text', 'input');
     codeInput.type = 'text';
     codeInput.placeholder = 'Код комнаты';
     codeInput.maxLength = 5;
-    wrapper.append(codeInput);
+    col.append(codeInput);
 
     this.codeInput = $(codeInput);
     this.codeInput.keyup(function(){
@@ -74,7 +69,7 @@ class Main {
         }
         window.lobby.initLobbyPage();
       } else {
-        alert('звать тебя как?');
+        alert('Необходимо ввести имя.');
       }
     }.bind(this));
   }

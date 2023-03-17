@@ -6,18 +6,18 @@ class Lobby {
 
     initLobbyPage() {
         this.content.empty();
-        const background = createElement('background');
-        this.content.append(background);
+        const content = createElement('content');
+        this.content.append(content);
 
-        const parent = createElement('lobby');
-        background.append(parent);
+        const container = createAndAppend('container py-5', content);
+        let row = createAndAppend('row row-cols-1 row-cols-lg-2 justify-content-around', container);
 
-        this.initLobbyList(parent);
-        this.initLobbySettings(parent);
+        this.initLobbyList(row);
+        this.initLobbySettings(row);
     }
 
     initLobbyList(parent) {
-        this.lobbyList = createElement('lobby-list');
+        this.lobbyList = createElement('col lobby-list');
         parent.append(this.lobbyList);
 
         this.lobbyList.append(createElement(null, 'h1', 'Игроки'));
@@ -26,38 +26,31 @@ class Lobby {
     }
 
     createDropDown() {
-        const selectWrapper = createElement('select');
-        const select = createElement('dropdown', 'select');
+        const select = createElement('form-control', 'select');
         select.append(createElement(null, 'option', '12 игроков'));
         select.append(createElement(null, 'option', '16 игроков'));
         select.append(createElement(null, 'option', '20 игроков'));
         select.append(createElement(null, 'option', '24 игроков'));
-        selectWrapper.append(select)
-        return selectWrapper;
+        return select;
     }
 
     initLobbySettings(parent) {
-        const settingsParent = createElement('lobby-settings-wrapper');
-        parent.append(settingsParent);
+        let col = createAndAppend('col', parent);
+        let row = createAndAppend('row row-cols-1 lobby-settings', col);
+        row.append(this.createCheckboxSetting('Option 1'));
+        row.append(this.createCheckboxSetting('Option 2', true));
 
-        const settings = createElement('lobby-settings');
-        settingsParent.append(settings);
+        row = createAndAppend('row row-cols-2', col);
 
-        settings.append(this.createCheckboxSetting('Option 1'));
-        settings.append(this.createCheckboxSetting('Option 2', true));
-
-        const parentButton = createElement('buttons-wrapper');
-        settingsParent.append(parentButton);
-
-        const startButton = createElement('button', 'button', 'Начать игру');
-        parentButton.append(startButton);
+        const startButton = createElement('button col', 'button', 'Начать игру');
+        row.append(startButton);
         this.startButton = $(startButton);
         this.startButton.click(function() {
             window.ws.startGame(this.id);
         }.bind(this));
 
-        const copyCode = createElement('button', 'button', 'Скопировать код');
-        parentButton.append(copyCode);
+        const copyCode = createElement('button col', 'button', 'Скопировать код');
+        row.append(copyCode);
         this.copyCode = $(copyCode);
         this.copyCode.click(function() {
             navigator.clipboard.writeText(this.id);
@@ -66,25 +59,18 @@ class Lobby {
     }
 
     createCheckboxSetting(label, checked){
-        const settings = createElement('selecting-settings');
-        settings.append(this.createCheckbox(checked));
-        settings.append(createElement(null, null, label));
-        return settings;
-    }
-
-    createCheckbox(checked) {
-        const checkbox = createElement('container', 'label');
-        const check = createElement(null, 'input');
-        check.type = 'checkbox';
-        check.checked = checked;
-        checkbox.append(check);
-        checkbox.append(createElement('checkmark', 'span'));
-        return checkbox;
+        let col = createElement('col selecting-settings');
+        const container = createElement('checkbox-container');
+        const input = createElement('form-check-input', 'input');
+        input.type = 'checkbox';
+        input.checked = checked;
+        container.append(input);
+        container.append(createElement('form-check-label', 'label', label));
+        return col;
     }
 
     addPlayer(playerName) {
-        const player = createElement(['player', 'lobby-list-vip']);
-        this.lobbyList.append(player);
+        const player = createAndAppend('player', this.lobbyList);
         player.append(createElement('player-avatar'));
         player.append(playerName);
     }

@@ -19,17 +19,26 @@ $(function () {
     });
 });
 
+function createAndAppend(cl, parent) {
+    const elem = createElement(cl);
+    parent.append(elem);
+    return elem;
+}
+
 function createElement(cl, type, innerText) {
   const elem = document.createElement(type || "div")
-  if(innerText) {
+  if (innerText) {
     elem.innerText = innerText;
   }
-  if (Array.isArray(cl)) {
-    for (let i = 0; i < cl.length; i++){
-      elem.classList.add(cl[i]);
+  if (typeof cl === 'string') {
+    if (cl.includes('')) {
+      classArray = cl.split(' ')
+      for (let i = 0; i < classArray.length; i++){
+        elem.classList.add(classArray[i]);
+      }
+    } else {
+      elem.classList.add(cl)
     }
-  } else if(typeof cl === 'string'){
-    elem.classList.add(cl)
   }
   return elem;
 }
