@@ -3,6 +3,8 @@ package com.geymaster.memes.controller;
 import com.geymaster.memes.messages.LobbyRequest;
 import com.geymaster.memes.messages.MemeRequest;
 import com.geymaster.memes.model.Lobby;
+import com.geymaster.memes.model.Meme;
+import com.geymaster.memes.model.Player;
 import com.geymaster.memes.storage.LobbyStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
 import java.time.Instant;
+import java.util.Arrays;
 
 @Controller
 public class GameController {
@@ -28,6 +31,7 @@ public class GameController {
         Lobby lobby = lobbyStorage.getLobby(lobbyId);
         lobby.init(request.getLobby().getConfig());
         notifyPlayers(lobby, "/creation");
+        //todo: удалить таймер, если все засбмитили вручную...
         scheduler.schedule(() -> notifyPlayers(lobby, "/endturn"),
                 Instant.now().plusSeconds(lobby.getConfig().getTimer() + 1));
     }
@@ -40,5 +44,10 @@ public class GameController {
     @MessageMapping("/game/{lobbyId}/submit")
     public void create(MemeRequest request, Principal principal, @DestinationVariable String lobbyId) {
         Lobby lobby = lobbyStorage.getLobby(lobbyId);
+        Player player = lobby.getPlayerById(principal.getName());
+        Meme meme = lobby.getLastRound().getMemes().get(player);
+        meme.getLines().addAll(Arrays.stream(request.getCaps()).toList());
+        //todo: делать только если ВСЕ засабмитили
+        notifyPlayers(lobby, "/endturn");
     }
 }

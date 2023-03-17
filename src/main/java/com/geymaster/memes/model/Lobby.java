@@ -35,4 +35,8 @@ public class Lobby {
         return new LobbyDto(id, players.toArray(new Player[0]), roundDtos.toArray(new RoundDto[0]), config);
     }
 
+    public Player getPlayerById(String id){
+        return players.stream().filter(player -> player.getId().equals(id)).findFirst().orElseThrow();
+    }
+
 }

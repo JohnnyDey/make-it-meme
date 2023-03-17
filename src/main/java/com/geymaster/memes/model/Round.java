@@ -11,6 +11,7 @@ import java.util.Map;
 @Getter
 public class Round {
     private final Map<Player, Meme> memes = new HashMap<>();
+    private boolean completed;
 
     public Player getPlayerMeme(String id) {
         return memes.keySet().stream().filter(p -> p.getName().equals(id)).findFirst().orElse(null);
@@ -27,6 +28,7 @@ public class Round {
     public RoundDto toDto() {
         RoundDto roundDto = new RoundDto();
         roundDto.setMemes(memes.values().stream().map(Meme::toDto).toList().toArray(new MemeDto[0]));
+        roundDto.setCompleted(completed);
         return roundDto;
     }
 }

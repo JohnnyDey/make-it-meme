@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public class RoundDto {
     private MemeDto[] memes;
+    private boolean completed;
 }

@@ -10,4 +10,5 @@ public class MemeDto {
     private String[] lines;
     private Cap[] caps;
     private String img;
+    private Integer[] grades;
 }

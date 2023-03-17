@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class MemeRequest {
-    private final List<String> caps = new ArrayList<>();
+    private String[] caps;
     private String img;
     private String lobbyId;
 

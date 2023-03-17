@@ -12,7 +12,7 @@ class WebSocketWrapper {
                 window.creation.updateState(JSON.parse(resp.body).lobby);
             });
             this.stompClient.subscribe('/user/' + creds + '/endturn', function(resp) {
-                console.log("Конец хода!")
+                window.grade.initGradePage(JSON.parse(resp.body).lobby);
             });
         }
 
@@ -40,6 +40,13 @@ class WebSocketWrapper {
                     'timer': 66
                 }
             }
+        }));
+    }
+
+    submitMeme(lobbyId, caps) {
+        this.stompClient.send(`/app/game/${lobbyId}/submit`, {}, JSON.stringify({
+            'lobbyId': lobbyId,
+            'caps': caps
         }));
     }
 }

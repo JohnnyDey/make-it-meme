@@ -1,6 +1,7 @@
 class Creation {
     constructor() {
         this.content = $('body');
+        this.canvas = new Canvas();
     }
 
     initCreation() {
@@ -21,23 +22,18 @@ class Creation {
     updateState(lobby) {
         this.lobby = lobby;
         this.initCreation();
-        this.img = new Image();
-        this.img.onload = () => {
-            this.ctx.canvas.width = this.img.naturalWidth;
-            this.ctx.canvas.height = this.img.naturalHeight;
-            this.restartCanvas()
-        };
-
-        this.img.src = window.location + this.lobby.rounds[0].memes[0].img;
+        this.canvas.updateImage(this.lobby.rounds[0].memes[0].img);
     }
 
     initContent(parent) {
         let col = createAndAppend('col meme', parent);
-        this.initCanvas(col);
+        this.canvas.initCanvas(col);
 
         col = createAndAppend('col make-text', parent);
+        if (lobby) {
         const memeCaps = this.lobby.rounds[0].memes[0].caps;
 
+        this.caps = [];
         let textCount = memeCaps.length;
         while (textCount > 0) {
             const text = createElement('text', 'textarea');
@@ -45,22 +41,21 @@ class Creation {
             text.setAttribute('index', memeCaps.length - textCount);
             col.append(text);
             const cap = $(text);
+            this.caps.push(cap);
             cap.bind('input propertychange', function() {
-                this.restartCanvas();
+                this.canvas.restartCanvas();
                 if (cap.val()) {
-                    this.draw(cap, memeCaps[text.getAttribute('index')]);
+                    this.canvas.draw(cap.val(), memeCaps[text.getAttribute('index')]);
                 }
             }.bind(this));
             textCount--;
         }
-        col.append(createElement('start-button', 'button', 'Готово'));
-    }
-
-    initCanvas(parent) {
-        const canvas = createElement('image', 'canvas')
-        parent.append(canvas);
-        this.canvas = $(canvas)[0];
-        this.ctx = this.canvas.getContext("2d");
+        const ready = createElement('start-button', 'button', 'Готово')
+        $(ready).click(function() {
+            window.ws.submitMeme(this.lobby.id, this.caps.map(v => v.val()));
+        }.bind(this));
+        col.append(ready);
+        }
     }
 
     initTimer(seconds) {
@@ -80,47 +75,5 @@ class Creation {
 
     formatTime(val) {
         return val > 9 ? val : '0' + val;
-    }
-
-    //canvas part
-    draw(cap, capSetting) {
-        let lines = 0;
-        let strings = [];
-        let fontSize;
-        do {
-            lines++;
-            fontSize = capSetting.height / lines;
-            this.ctx.font = fontSize + "px serif";
-            strings = cap.val().split("\n");
-            strings = strings.flatMap(v => this.splitByMaxWidth(v, capSetting.width));
-        } while (lines < strings.length)
-        this.fillText(fontSize, strings, capSetting.x, capSetting.y + fontSize);
-    }
-
-    restartCanvas() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.drawImage(this.img, 0, 0, this.canvas.width, this.canvas.height);
-    }
-
-    fillText(fontSize, strings, initX, initY) {
-        let y = initY;
-        for (let i = 0; i < strings.length; i++) {
-            this.ctx.fillText(strings[i], initX, y);
-            y += fontSize;
-        }
-    }
-
-    splitByMaxWidth(value, max) {
-        const words = value.split(' ');
-        let res = [''];
-        for (let i = 0; i < words.length; i++) {
-            let newVal = res[res.length - 1] ? res[res.length - 1] + ' ' + words[i] : words[i];
-            if (this.ctx.measureText(newVal).width > max) {
-                res[res.length] = words[i];
-            } else {
-                res[res.length - 1] = newVal;
-            }
-        }
-        return res;
     }
 }
