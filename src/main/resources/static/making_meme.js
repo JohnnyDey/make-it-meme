@@ -36,17 +36,19 @@ class Creation {
         this.initCanvas(col);
 
         col = createAndAppend('col make-text', parent);
+        const memeCaps = this.lobby.rounds[0].memes[0].caps;
 
-        let textCount = this.lobby.rounds[0].memes[0].caps.length;
+        let textCount = memeCaps.length;
         while (textCount > 0) {
             const text = createElement('text', 'textarea');
-            text.placeholder = 'Текст ' + (this.lobby.rounds[0].memes[0].caps.length - textCount + 1);
+            text.placeholder = 'Текст ' + (memeCaps.length - textCount + 1);
+            text.setAttribute('index', memeCaps.length - textCount);
             col.append(text);
             const cap = $(text);
             cap.bind('input propertychange', function() {
                 this.restartCanvas();
                 if (cap.val()) {
-                    this.draw(cap);
+                    this.draw(cap, memeCaps[text.getAttribute('index')]);
                 }
             }.bind(this));
             textCount--;
@@ -81,18 +83,18 @@ class Creation {
     }
 
     //canvas part
-    draw(cap) {
-        let lines = 2;
+    draw(cap, capSetting) {
+        let lines = 0;
         let strings = [];
         let fontSize;
         do {
             lines++;
-            fontSize = 150 / lines;
+            fontSize = capSetting.height / lines;
             this.ctx.font = fontSize + "px serif";
             strings = cap.val().split("\n");
-            strings = strings.flatMap(v => this.splitByMaxWidth(v, 550));
+            strings = strings.flatMap(v => this.splitByMaxWidth(v, capSetting.width));
         } while (lines < strings.length)
-        this.fillText(fontSize, strings);
+        this.fillText(fontSize, strings, capSetting.x, capSetting.y + fontSize);
     }
 
     restartCanvas() {
@@ -100,10 +102,10 @@ class Creation {
         this.ctx.drawImage(this.img, 0, 0, this.canvas.width, this.canvas.height);
     }
 
-    fillText(fontSize, strings) {
-        let y = fontSize;
+    fillText(fontSize, strings, initX, initY) {
+        let y = initY;
         for (let i = 0; i < strings.length; i++) {
-            this.ctx.fillText(strings[i], 5, y);
+            this.ctx.fillText(strings[i], initX, y);
             y += fontSize;
         }
     }

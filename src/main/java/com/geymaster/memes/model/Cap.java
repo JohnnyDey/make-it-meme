@@ -8,6 +8,6 @@ import lombok.Getter;
 public class Cap {
     private int x;
     private int y;
-    private int length;
+    private int height;
     private int width;
 }

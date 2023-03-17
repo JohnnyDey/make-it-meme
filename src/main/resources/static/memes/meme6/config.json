@@ -2,8 +2,10 @@
   "img": "memes/meme6/meme.jpg",
   "caps": [
     {
-      "x": 10,
-      "y": 10
+      "x": 5,
+      "y": 1,
+      "width": 585,
+      "height": 150
     }
   ]
 }
