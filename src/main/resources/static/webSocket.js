@@ -11,8 +11,8 @@ class WebSocketWrapper {
             this.stompClient.subscribe('/user/' + creds + '/creation', function(resp) {
                 window.creation.updateState(JSON.parse(resp.body).lobby);
             });
-            this.stompClient.subscribe('/user/' + creds + '/endturn', function(resp) {
-                window.grade.initGradePage(JSON.parse(resp.body).lobby);
+            this.stompClient.subscribe('/user/' + creds + '/grade', function(resp) {
+                window.grade.initGradePage(JSON.parse(resp.body));
             });
         }
 

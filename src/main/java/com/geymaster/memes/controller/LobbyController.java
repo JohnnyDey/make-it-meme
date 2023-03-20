@@ -26,15 +26,16 @@ public class LobbyController {
         template.convertAndSendToUser(principal.getName(), "/lobby", new LobbyRequest(lobby.toDto()));
     }
 
-    //todo may be race condition...
     @MessageMapping("/game/lobby/join")
     public void join(LobbyRequest request, Principal principal) {
         Lobby lobby = lobbyStorage.getLobby(request.getLobbyId());
-        List<Player> players = lobby.getPlayers();
-        if (players.stream().anyMatch(p -> p.getId().equals(principal.getName()))) {
-            throw new IllegalArgumentException("Player Already exists");
-        }
-        players.add(new Player(principal.getName(), request.getName()));
-        players.forEach(p -> template.convertAndSendToUser(p.getId(), "/lobby", new LobbyRequest(lobby.toDto())));
+        lobby.runInLock(() -> {
+            List<Player> players = lobby.getPlayers();
+            if (players.stream().anyMatch(p -> p.getId().equals(principal.getName()))) {
+                throw new IllegalArgumentException("Player Already exists");
+            }
+            players.add(new Player(principal.getName(), request.getName()));
+            players.forEach(p -> template.convertAndSendToUser(p.getId(), "/lobby", new LobbyRequest(lobby.toDto())));
+        });
     }
 }

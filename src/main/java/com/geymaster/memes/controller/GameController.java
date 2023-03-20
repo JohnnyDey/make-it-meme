@@ -1,5 +1,6 @@
 package com.geymaster.memes.controller;
 
+import com.geymaster.memes.messages.GradeRequest;
 import com.geymaster.memes.messages.LobbyRequest;
 import com.geymaster.memes.messages.MemeRequest;
 import com.geymaster.memes.model.Lobby;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.concurrent.ScheduledFuture;
 
 @Controller
 public class GameController {
@@ -29,25 +31,46 @@ public class GameController {
     @MessageMapping("/game/{lobbyId}/start")
     public void start(LobbyRequest request, Principal principal, @DestinationVariable String lobbyId) {
         Lobby lobby = lobbyStorage.getLobby(lobbyId);
-        lobby.init(request.getLobby().getConfig());
-        notifyPlayers(lobby, "/creation");
-        //todo: удалить таймер, если все засбмитили вручную...
-        scheduler.schedule(() -> notifyPlayers(lobby, "/endturn"),
-                Instant.now().plusSeconds(lobby.getConfig().getTimer() + 1));
+        lobby.runInLock(() -> {
+            lobby.init(request.getLobby().getConfig());
+            lobby.getPlayers().forEach(p -> template.convertAndSendToUser(p.getId(), "/creation",
+                    new LobbyRequest(lobby.toDto())));
+            scheduleEndOfTheTurn(lobby);
+        });
     }
 
-    private void notifyPlayers(Lobby lobby, String destination){
-        lobby.getPlayers().forEach(p -> template.convertAndSendToUser(p.getId(), destination,
-                new LobbyRequest(lobby.toDto())));
+    private void scheduleEndOfTheTurn(Lobby lobby) {
+        ScheduledFuture<?> future = scheduler.schedule(() -> startGrade(lobby),
+                Instant.now().plusSeconds(lobby.getConfig().getTimer() + 1));
+        lobby.setFuture(future);
+    }
+
+    private void startGrade(Lobby lobby){
+        lobby.getPlayers().forEach(p -> template.convertAndSendToUser(p.getId(), "/grade",
+                new MemeRequest(lobby.getMemeToGrade().orElseThrow())));
     }
 
     @MessageMapping("/game/{lobbyId}/submit")
     public void create(MemeRequest request, Principal principal, @DestinationVariable String lobbyId) {
         Lobby lobby = lobbyStorage.getLobby(lobbyId);
-        Player player = lobby.getPlayerById(principal.getName());
-        Meme meme = lobby.getLastRound().getMemes().get(player);
-        meme.getLines().addAll(Arrays.stream(request.getCaps()).toList());
-        //todo: делать только если ВСЕ засабмитили
-        notifyPlayers(lobby, "/endturn");
+        lobby.runInLock(() -> {
+            Player player = lobby.getPlayerById(principal.getName());
+            Meme meme = lobby.getLastRound().getMemes().get(player);
+            meme.submit(Arrays.stream(request.getCaps()).toList());
+            if (lobby.isAllMemesSubmitted()) {
+                lobby.getFuture().cancel(true);
+                startGrade(lobby);
+            }
+        });
+    }
+
+    @MessageMapping("/game/{lobbyId}/grade")
+    public void grade(GradeRequest request, Principal principal, @DestinationVariable String lobbyId) {
+        Lobby lobby = lobbyStorage.getLobby(lobbyId);
+        lobby.runInLock(() -> {
+            Player player = lobby.getPlayerById(principal.getName());
+            Meme meme = lobby.getMemeToGrade().orElseThrow();
+            meme.grade(request.getGrade(), lobby.getPlayers().size());
+        });
     }
 }

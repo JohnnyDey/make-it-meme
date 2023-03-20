@@ -5,8 +5,8 @@ class Grade {
         this.canvas = new Canvas();
     }
 
-     initGradePage(lobby) {
-        this.lobby = lobby;
+     initGradePage(meme) {
+        this.meme = meme;
         this.content.empty();
         const content = createElement('content');
         this.content.append(content);
@@ -37,28 +37,11 @@ class Grade {
      }
 
      updateCanvas(){
-        const meme = this.getMeme();
         const afterLoad = function () {
-            for (let i = 0; i < meme.caps.length; i++) {
-                this.draw(meme.lines[i], meme.caps[i]);
+            for (let i = 0; i < this.meme.caps.length; i++) {
+                this.draw(this.meme.lines[i], this.meme.caps[i]);
             }
         }.bind(this.canvas);
-        this.canvas.updateImage(meme.img, afterLoad)
-
-     }
-
-     getMeme(){
-        let lastRound;
-        for (const round of this.lobby.rounds) {
-           if (!round.completed){
-               lastRound = round;
-               break;
-           }
-        }
-        for (const meme of lastRound.memes) {
-           if (meme.grades.length === 0){
-               return meme;
-           }
-        }
+        this.canvas.updateImage(this.meme.img, afterLoad)
      }
 }

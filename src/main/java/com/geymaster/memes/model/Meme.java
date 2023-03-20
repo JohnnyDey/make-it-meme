@@ -12,11 +12,13 @@ public class Meme {
     private final List<Cap> caps = new ArrayList<>();
     private String img;
     private final List<Integer> grades;
+    private MemeStatus status;
 
 
     public Meme() {
         lines = new ArrayList<>();
         grades = new ArrayList<>();
+        status = MemeStatus.NEW;
     }
 
     public MemeDto toDto(){
@@ -26,5 +28,33 @@ public class Meme {
         memeDto.setGrades(grades.toArray(new Integer[0]));
         memeDto.setLines(lines.toArray(new String[0]));
         return memeDto;
+    }
+
+    public void submit(List<String> lines){
+        this.lines.addAll(lines);
+        status = MemeStatus.SUBMITTED;
+    }
+
+    public boolean grade(Integer grade, int lobbyCap) {
+        grades.add(grade);
+        if (grades.size() >= lobbyCap) {
+            status = MemeStatus.GRADED;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isSubmitted() {
+        return status == MemeStatus.SUBMITTED;
+    }
+
+    public boolean isGraded() {
+        return status == MemeStatus.GRADED;
+    }
+
+    enum MemeStatus{
+        NEW,
+        SUBMITTED,
+        GRADED
     }
 }

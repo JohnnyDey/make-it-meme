@@ -21,16 +21,15 @@ class Lobby {
         parent.append(this.lobbyList);
 
         this.lobbyList.append(createElement(null, 'h1', 'Игроки'));
-        this.lobbyList.append(this.createDropDown());
+        this.lobbyList.append(this.createDropDown(['12 игроков', '16 игроков', '20 игроков', '24 игроков']));
         this.addPlayer('Лидер лобби');
     }
 
-    createDropDown() {
+    createDropDown(options) {
         const select = createElement('form-control', 'select');
-        select.append(createElement(null, 'option', '12 игроков'));
-        select.append(createElement(null, 'option', '16 игроков'));
-        select.append(createElement(null, 'option', '20 игроков'));
-        select.append(createElement(null, 'option', '24 игроков'));
+        for (const option of options) {
+            select.append(createElement(null, 'option', option));
+        }
         return select;
     }
 
@@ -66,6 +65,7 @@ class Lobby {
         input.checked = checked;
         container.append(input);
         container.append(createElement('form-check-label', 'label', label));
+        col.append(container);
         return col;
     }
 
