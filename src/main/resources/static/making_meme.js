@@ -9,13 +9,13 @@ class Creation {
         const content = createElement('content');
         this.content.append(content);
 
-        const container = createAndAppend('container py-5', content);
-        let row = createAndAppend('row justify-content-end', container);
+        this.container = createAndAppend('container py-5', content);
+        let row = createAndAppend('row justify-content-end', this.container);
         let col = createAndAppend('col-auto timer', row);
         this.time = $(createAndAppend('time', col));
         this.initTimer(this.lobby.config.timer || 0);
 
-        row = createAndAppend('row row-cols-1 row-cols-lg-2 justify-content-around gy-3', container);
+        row = createAndAppend('row row-cols-1 row-cols-lg-2 justify-content-around gy-3', this.container);
         this.initContent(row);
     }
 
@@ -53,6 +53,7 @@ class Creation {
         const ready = createElement('start-button', 'button', 'Готово')
         $(ready).click(function() {
             window.ws.submitMeme(this.lobby.id, this.caps.map(v => v.val()));
+            this.onSubmit();
         }.bind(this));
         col.append(ready);
         }
@@ -65,6 +66,7 @@ class Creation {
             const sec = this.formatTime(time % 60);
             this.time.text(min + ':' + sec);
             if (time == 0) {
+                window.ws.submitMeme(this.lobby.id, this.caps.map(v => v.val()));
                 clearInterval(this.timer)
             }
             time--;
@@ -75,5 +77,11 @@ class Creation {
 
     formatTime(val) {
         return val > 9 ? val : '0' + val;
+    }
+
+    onSubmit() {
+        $(this.container).empty();
+        const row = createAndAppend('row py-5', this.container);
+        row.innerText = 'Ты создал шедевр! Можешь отдохнуть, поку другие трудятся.';
     }
 }

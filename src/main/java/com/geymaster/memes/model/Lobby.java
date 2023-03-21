@@ -27,7 +27,7 @@ public class Lobby {
     }
 
     public Round getLastRound() {
-        return rounds.get(rounds.size() - 1);
+        return rounds.stream().filter(r -> r.getStatus() != Round.RoundStatus.GRADED).findFirst().orElseThrow();
     }
 
     public boolean isAllMemesSubmitted() {
@@ -41,9 +41,15 @@ public class Lobby {
 
     public void init(Config config) {
         this.config = config;
-        Round round = new Round();
-        round.init(players, MemeStorage.getRandomMeme());
-        rounds.add(round);
+        for (int i = 0; i < config.getRoundCount(); i ++) {
+            Round round = new Round();
+            if (config.isOneMeme()) {
+                round.init(players, MemeStorage.getRandomMeme());
+            } else {
+                players.forEach((p) -> round.init(p, MemeStorage.getRandomMeme()));
+            }
+            rounds.add(round);
+        }
     }
 
     public LobbyDto toDto() {

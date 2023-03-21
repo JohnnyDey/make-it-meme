@@ -11,14 +11,28 @@ import java.util.Map;
 @Getter
 public class Round {
     private final Map<Player, Meme> memes = new HashMap<>();
-    private boolean completed;
+    private RoundStatus status;
 
     public Player getPlayerMeme(String id) {
         return memes.keySet().stream().filter(p -> p.getName().equals(id)).findFirst().orElse(null);
     }
 
     public void init(List<Player> players, Meme meme) {
-        players.forEach(p -> memes.put(p, meme));
+        status = RoundStatus.NEW;
+        players.forEach(p -> memes.put(p, meme.clone()));
+    }
+
+    public void init(Player player, Meme meme) {
+        status = RoundStatus.NEW;
+        memes.put(player, meme.clone());
+    }
+
+    public void created() {
+        status = RoundStatus.CREATED;
+    }
+
+    public void graded() {
+        status = RoundStatus.GRADED;
     }
 
     public boolean isPlayerSubmit(String id) {
@@ -28,7 +42,11 @@ public class Round {
     public RoundDto toDto() {
         RoundDto roundDto = new RoundDto();
         roundDto.setMemes(memes.values().stream().map(Meme::toDto).toList().toArray(new MemeDto[0]));
-        roundDto.setCompleted(completed);
         return roundDto;
+    }
+    enum RoundStatus {
+        NEW,
+        CREATED,
+        GRADED
     }
 }

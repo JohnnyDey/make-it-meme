@@ -7,4 +7,7 @@ import lombok.Setter;
 @Setter
 public class Config {
     private Integer timer;
+    private int roundCount;
+    private boolean oneMeme;
+    private boolean inGameJoin;
 }

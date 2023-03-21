@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class Meme {
+public class Meme implements Cloneable {
     private final List<String> lines;
     private final List<Cap> caps = new ArrayList<>();
     private String img;
@@ -50,6 +50,15 @@ public class Meme {
 
     public boolean isGraded() {
         return status == MemeStatus.GRADED;
+    }
+
+    @Override
+    public Meme clone() {
+        try {
+            return (Meme) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 
     enum MemeStatus{

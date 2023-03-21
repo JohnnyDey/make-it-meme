@@ -2,8 +2,28 @@
 {
     border-radius: 10px;
     background-color: rgba(255, 255, 255, .3);
-    min-height: 500px;
+    height: 500px;
+    overflow-y: scroll;
+    scrollbar-color: #a18cd1 #F5F5F5;
 }
+
+.lobby-list::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    background-color: #F5F5F5;
+}
+
+.lobby-list::-webkit-scrollbar {
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+.lobby-list::-webkit-scrollbar-thumb {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    background-image: -webkit-gradient(linear, left bottom, left top, from(#a18cd1), to(#fbc2eb));
+    background-image: -webkit-linear-gradient(bottom, #a18cd1 0%, #fbc2eb 100%);
+    background-image: linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%);
+}
+
 .lobby-settings
 {
     min-height: 450px;

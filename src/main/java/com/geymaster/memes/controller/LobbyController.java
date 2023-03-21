@@ -22,7 +22,7 @@ public class LobbyController {
     @MessageMapping("/game/lobby/create")
     public void create(LobbyRequest request, Principal principal) {
         Lobby lobby = lobbyStorage.create();
-        lobby.getPlayers().add(new Player(principal.getName(), request.getName()));
+        lobby.getPlayers().add(new Player(principal.getName(), request.getName(), true));
         template.convertAndSendToUser(principal.getName(), "/lobby", new LobbyRequest(lobby.toDto()));
     }
 

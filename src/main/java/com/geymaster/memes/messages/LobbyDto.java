@@ -6,11 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Arrays;
+
 @Setter
 @Getter
 @NoArgsConstructor
 public class LobbyDto {
     private String id;
+    private String leaderId;
     private Player[] players;
     private RoundDto[] rounds;
     private Config config;
@@ -20,5 +23,6 @@ public class LobbyDto {
         this.players = players;
         this.rounds = rounds;
         this.config = config;
+        Arrays.stream(players).filter(Player::isLeader).findFirst().ifPresent(p -> leaderId = p.getId());
     }
 }

@@ -6,7 +6,8 @@ class WebSocketWrapper {
         const onConnect = function(frame) {
             const creds = frame.headers['user-name'];
             this.stompClient.subscribe('/user/' + creds + '/lobby', function(resp) {
-                window.lobby.updateState(JSON.parse(resp.body).lobby);
+                const lobby = JSON.parse(resp.body).lobby;
+                window.lobby.updateState(lobby, lobby.leaderId == creds);
             });
             this.stompClient.subscribe('/user/' + creds + '/creation', function(resp) {
                 window.creation.updateState(JSON.parse(resp.body).lobby);
@@ -32,12 +33,15 @@ class WebSocketWrapper {
         }));
     }
 
-    startGame(lobbyId) {
+    startGame(lobbyId, timer, roundCount, oneMeme, inGameJoin) {
         this.stompClient.send(`/app/game/${lobbyId}/start`, {}, JSON.stringify({
             'lobbyId': lobbyId,
             'lobby': {
                 'config':{
-                    'timer': 66
+                    'timer': timer,
+                    'roundCount': roundCount,
+                    'oneMeme': oneMeme,
+                    'inGameJoin': inGameJoin
                 }
             }
         }));
@@ -46,7 +50,13 @@ class WebSocketWrapper {
     submitMeme(lobbyId, caps) {
         this.stompClient.send(`/app/game/${lobbyId}/submit`, {}, JSON.stringify({
             'lobbyId': lobbyId,
-            'caps': caps
+            'lines': caps
+        }));
+    }
+
+    gradeMeme(lobbyId, grade) {
+        this.stompClient.send(`/app/game/${lobbyId}/grade`, {}, JSON.stringify({
+            'grade': grade,
         }));
     }
 }

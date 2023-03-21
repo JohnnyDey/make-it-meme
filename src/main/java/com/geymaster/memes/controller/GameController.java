@@ -46,8 +46,9 @@ public class GameController {
     }
 
     private void startGrade(Lobby lobby){
+        lobby.getLastRound().created();
         lobby.getPlayers().forEach(p -> template.convertAndSendToUser(p.getId(), "/grade",
-                new MemeRequest(lobby.getMemeToGrade().orElseThrow())));
+                new MemeRequest(lobby.getMemeToGrade().orElseThrow(), lobby.getId())));
     }
 
     @MessageMapping("/game/{lobbyId}/submit")
@@ -56,7 +57,7 @@ public class GameController {
         lobby.runInLock(() -> {
             Player player = lobby.getPlayerById(principal.getName());
             Meme meme = lobby.getLastRound().getMemes().get(player);
-            meme.submit(Arrays.stream(request.getCaps()).toList());
+            meme.submit(Arrays.stream(request.getLines()).toList());
             if (lobby.isAllMemesSubmitted()) {
                 lobby.getFuture().cancel(true);
                 startGrade(lobby);
@@ -68,7 +69,6 @@ public class GameController {
     public void grade(GradeRequest request, Principal principal, @DestinationVariable String lobbyId) {
         Lobby lobby = lobbyStorage.getLobby(lobbyId);
         lobby.runInLock(() -> {
-            Player player = lobby.getPlayerById(principal.getName());
             Meme meme = lobby.getMemeToGrade().orElseThrow();
             meme.grade(request.getGrade(), lobby.getPlayers().size());
         });
