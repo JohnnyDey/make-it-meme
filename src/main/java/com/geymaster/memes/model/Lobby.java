@@ -17,6 +17,7 @@ public class Lobby {
     private final String id;
     private final List<Player> players = new ArrayList<>();
     private final List<Round> rounds = new ArrayList<>();
+    private LobbyStatus status = LobbyStatus.WAITING;
     private Config config;
     @Setter
     private ScheduledFuture<?> future;
@@ -41,6 +42,7 @@ public class Lobby {
 
     public void init(Config config) {
         this.config = config;
+        this.status = LobbyStatus.IN_PROCESS;
         for (int i = 0; i < config.getRoundCount(); i ++) {
             Round round = new Round();
             if (config.isOneMeme()) {
@@ -68,5 +70,10 @@ public class Lobby {
         } finally {
             lock.unlock();
         }
+    }
+
+    public enum LobbyStatus {
+        WAITING,
+        IN_PROCESS
     }
 }
