@@ -91,7 +91,7 @@ class Lobby {
             row.append(startButton);
             this.startButton = $(startButton);
             this.startButton.click(function() {
-                window.ws.startGame(this.lobby.id,
+                window.ws.startGame(this.id,
                     $('#' + this.ROUND_DURATION_ID).val(),
                     $('#' + this.ROUND_COUNT_ID).val(),
                     $('#' + this.ONE_PIC_ID).is(':checked'),
@@ -102,7 +102,7 @@ class Lobby {
             row.append(copyCode);
             this.copyCode = $(copyCode);
             this.copyCode.click(function() {
-                navigator.clipboard.writeText(this.lobby.id);
+                navigator.clipboard.writeText(this.id);
             }.bind(this));
         } else {
             col = createAndAppend('col py-2', row);
@@ -134,6 +134,7 @@ class Lobby {
     updateState(lobby, asLeader) {
         this.lobby = lobby;
         this.asLeader = asLeader;
+        this.id = lobby.id;
         this.initLobbySettings(this.listAndSettingsParent);
         this.clearPlayerList();
         for (const player of lobby.players) {

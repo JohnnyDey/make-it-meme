@@ -34,9 +34,6 @@ public class LobbyController {
             if (players.stream().anyMatch(p -> p.getId().equals(principal.getName()))) {
                 throw new IllegalArgumentException("Player Already exists");
             }
-            if (lobby.getStatus() != Lobby.LobbyStatus.WAITING && !lobby.getConfig().isInGameJoin()) {
-                throw new IllegalArgumentException("В игру нельзя присоединиться");
-            }
             players.add(new Player(principal.getName(), request.getName()));
             players.forEach(p -> template.convertAndSendToUser(p.getId(), "/lobby", new LobbyRequest(lobby.toDto())));
         });
