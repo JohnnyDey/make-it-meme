@@ -18,6 +18,12 @@ repositories {
 	mavenCentral()
 }
 
+jar {
+	manifest {
+		attributes 'MemesApplication': 'com.geymaster.memes'
+	}
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
