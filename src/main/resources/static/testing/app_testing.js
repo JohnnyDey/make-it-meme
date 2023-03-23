@@ -1,19 +1,19 @@
-//Common file for application
-function initWrappers() {
-  window.ws = new WebSocketWrapper();
-  let searchParams = new URLSearchParams(window.location.search)
-  if (searchParams.has('id')) {
-    window.ws.joinLobby('fake', searchParams.get('id'));
-  }
-  window.main = new Main();
-  window.lobby = new Lobby();
-  window.creation = new Creation();
-  window.grade = new Grade();
-}
-
 $(function () {
-    initWrappers();
-    window.main.initMainPage();
+      window.creation = new CreationTest();
+      window.grade = new GradeTesting();
+      window.creation.initCreation();
+      const id = new URLSearchParams(window.location.search).get('memeId');
+      $.getJSON(document.location.origin + '/memes/meme' + id + '/config.json', function( data ) {
+        window.fakeLobby = {
+           id: 'fake',
+           config: {},
+           rounds: [{
+               memes: [data]
+           }]
+         }
+        window.creation.updateState(window.fakeLobby);
+      });
+
 });
 
 function createAndAppend(cl, parent) {
@@ -99,6 +99,6 @@ class Canvas {
                 afterLoad();
             }
         };
-        this.img.src = window.location + src;
+        this.img.src = document.location.origin + '/' + src;
     }
 }

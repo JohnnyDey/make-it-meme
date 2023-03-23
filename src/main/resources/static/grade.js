@@ -34,7 +34,7 @@ class Grade {
         img.src = "assets/" + src + ".svg";
         grade.append(img);
         $(col).click(function() {
-                window.ws.gradeMeme(this.meme.lobbyId, score);
+            this.onGrade(score)
         }.bind(this));
         return col
      }
@@ -46,5 +46,9 @@ class Grade {
             }
         }.bind({meme: this.meme, canvas: this.canvas});
         this.canvas.updateImage(this.meme.img, afterLoad)
+     }
+
+     onGrade() {
+        window.ws.gradeMeme(this.meme.lobbyId, score);
      }
 }

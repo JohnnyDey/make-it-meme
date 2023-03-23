@@ -13,7 +13,9 @@ class Creation {
         let row = createAndAppend('row justify-content-end', this.container);
         let col = createAndAppend('col-auto timer', row);
         this.time = $(createAndAppend('time', col));
-        this.initTimer(this.lobby.config.timer || 0);
+        if (this.lobby) {
+            this.initTimer(this.lobby.config.timer || 0);
+        }
 
         row = createAndAppend('row row-cols-1 row-cols-lg-2 justify-content-around gy-3', this.container);
         this.initContent(row);
@@ -30,32 +32,29 @@ class Creation {
         this.canvas.initCanvas(col);
 
         col = createAndAppend('col make-text', parent);
-        if (lobby) {
-        const memeCaps = this.lobby.rounds[0].memes[0].caps;
+        if (this.lobby) {
+            const memeCaps = this.lobby.rounds[0].memes[0].caps;
 
-        this.caps = [];
-        let textCount = memeCaps.length;
-        while (textCount > 0) {
-            const text = createElement('text', 'textarea');
-            text.placeholder = 'Текст ' + (memeCaps.length - textCount + 1);
-            text.setAttribute('index', memeCaps.length - textCount);
-            col.append(text);
-            const cap = $(text);
-            this.caps.push(cap);
-            cap.bind('input propertychange', function() {
-                this.canvas.restartCanvas();
-                if (cap.val()) {
-                    this.canvas.draw(cap.val(), memeCaps[text.getAttribute('index')]);
-                }
-            }.bind(this));
-            textCount--;
-        }
-        const ready = createElement('start-button', 'button', 'Готово')
-        $(ready).click(function() {
-            window.ws.submitMeme(this.lobby.id, this.caps.map(v => v.val()));
-            this.onSubmit();
-        }.bind(this));
-        col.append(ready);
+            this.caps = [];
+            let textCount = memeCaps.length;
+            while (textCount > 0) {
+                const text = createElement('text', 'textarea');
+                text.placeholder = 'Текст ' + (memeCaps.length - textCount + 1);
+                text.setAttribute('index', memeCaps.length - textCount);
+                col.append(text);
+                const cap = $(text);
+                this.caps.push(cap);
+                cap.bind('input propertychange', function() {
+                    this.canvas.restartCanvas();
+                    if (cap.val()) {
+                        this.canvas.draw(cap.val(), memeCaps[text.getAttribute('index')]);
+                    }
+                }.bind(this));
+                textCount--;
+            }
+            const ready = createElement('start-button', 'button', 'Готово')
+            $(ready).click(this.onSubmit.bind(this));
+            col.append(ready);
         }
     }
 
@@ -80,6 +79,7 @@ class Creation {
     }
 
     onSubmit() {
+        window.ws.submitMeme(this.lobby.id, this.caps.map(v => v.val()));
         $(this.container).empty();
         const row = createAndAppend('row py-5', this.container);
         row.innerText = 'Ты создал шедевр! Можешь отдохнуть, поку другие трудятся.';
