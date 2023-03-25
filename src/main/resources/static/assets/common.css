@@ -1,17 +1,15 @@
 @font-face
 {
-    font-family: 'RubikMonoOne-Regular';
+    font-family: 'Yanone-Regular';
     font-weight: normal;
     font-style: normal;
 
-    color: white;
-
-    src: url('RubikMonoOne-Regular.ttf');
+    src: url('YanoneKaffeesatz-Regular.ttf');
 }
 
 h1
 {
-    font-family: RubikMonoOne-Regular;
+    font-family: Yanone-Regular;
     font-size: 30px;
 
     color: aqua;
@@ -19,7 +17,7 @@ h1
 
 .button
 {
-    font-family: RubikMonoOne-Regular;
+    font-family: Yanone-Regular;
     font-size: 20px;
 
     padding: 5px;
@@ -48,7 +46,7 @@ body
     margin: 0;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    font-family: RubikMonoOne-Regular;
+    font-family: Yanone-Regular;
     background: linear-gradient(360deg,#3c2974 30%, #7a0085 100%);
 }
 
@@ -63,7 +61,7 @@ body
 
 .text
 {
-    font-family: RubikMonoOne-Regular;
+    font-family: Yanone-Regular;
     font-size: 20px;
 
     width: 100%;
@@ -78,7 +76,7 @@ body
 
 button
 {
-    font-family: RubikMonoOne-Regular;
+    font-family: Yanone-Regular;
     font-size: 20px;
 
     width: 100%;

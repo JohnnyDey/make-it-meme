@@ -31,7 +31,7 @@ class Lobby {
         this.content.append(content);
 
         const container = createAndAppend('container py-5', content);
-        this.listAndSettingsParent = createAndAppend('row row-cols-1 row-cols-lg-2 justify-content-around', container);
+        this.listAndSettingsParent = createAndAppend('row row-cols-1 row-cols-lg-2 justify-content-around g-3', container);
 
         this.initLobbyList(this.listAndSettingsParent);
         this.initLobbySettings(this.listAndSettingsParent);
@@ -77,7 +77,7 @@ class Lobby {
         if (parent.children[1]) {
             parent.removeChild(parent.children[1]);
         }
-        let col = createAndAppend('col', parent);
+        let col = createAndAppend('col gx-lg-5', parent);
         let row = createAndAppend('row row-cols-1 lobby-settings', col);
         if (this.asLeader) {
             row.append(this.createDropDown(this.roundDuration, this.ROUND_DURATION_ID, 'Длительность создания мемов'));
@@ -125,9 +125,17 @@ class Lobby {
         return col;
     }
 
-    addPlayer(playerName) {
+    addPlayer(playerName, avatarId) {
         const player = createAndAppend('player', this.lobbyList);
-        player.append(createElement('player-avatar'));
+        const avatar = createElement('player-avatar')
+        player.append(avatar);
+        const avatarImg = createElement(null, 'img')
+        if (avatarId) {
+            avatarImg.src = 'ava/ava' + avatarId + '.png';
+            avatarImg.width = 31;
+            avatarImg.height = 31;
+            avatar.append(avatarImg);
+        }
         player.append(playerName);
     }
 
@@ -138,7 +146,7 @@ class Lobby {
         this.initLobbySettings(this.listAndSettingsParent);
         this.clearPlayerList();
         for (const player of lobby.players) {
-            this.addPlayer(player.name);
+            this.addPlayer(player.name, player.avatarId);
         }
         const limit = $('#limit');
         for (let i = 0; i < limit.val() - lobby.players.length; i++) {

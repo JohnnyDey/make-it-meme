@@ -46,8 +46,10 @@ class Creation {
                 this.caps.push(cap);
                 cap.bind('input propertychange', function() {
                     this.canvas.restartCanvas();
-                    if (cap.val()) {
-                        this.canvas.draw(cap.val(), memeCaps[text.getAttribute('index')]);
+                    for (let cap of this.caps) {
+                        if (cap.val()) {
+                            this.canvas.draw(cap.val(), memeCaps[cap.attr('index')]);
+                        }
                     }
                 }.bind(this));
                 textCount--;

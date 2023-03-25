@@ -22,7 +22,7 @@ public class LobbyController {
     @MessageMapping("/game/lobby/create")
     public void create(LobbyRequest request, Principal principal) {
         Lobby lobby = lobbyStorage.create();
-        lobby.getPlayers().add(new Player(principal.getName(), request.getName(), true));
+        lobby.getPlayers().add(new Player(principal.getName(), request.getName(), request.getAvatarId(), true));
         template.convertAndSendToUser(principal.getName(), "/lobby", new LobbyRequest(lobby.toDto()));
     }
 
@@ -34,7 +34,7 @@ public class LobbyController {
             if (players.stream().anyMatch(p -> p.getId().equals(principal.getName()))) {
                 throw new IllegalArgumentException("Player Already exists");
             }
-            players.add(new Player(principal.getName(), request.getName()));
+            players.add(new Player(principal.getName(), request.getName(), request.getAvatarId()));
             players.forEach(p -> template.convertAndSendToUser(p.getId(), "/lobby", new LobbyRequest(lobby.toDto())));
         });
     }

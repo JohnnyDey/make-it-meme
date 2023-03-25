@@ -12,7 +12,7 @@ public class MemeStorage {
 
     public static Meme getRandomMeme() {
         Gson gson = new Gson();
-        int memeNumber = 6;
+        int memeNumber = 100;
         String path = String.format("%sstatic/memes/meme%s/config.json", ResourceUtils.CLASSPATH_URL_PREFIX, memeNumber);
         try (Reader reader = Files.newBufferedReader(ResourceUtils.getFile(path).toPath())) {
             return gson.fromJson(reader, Meme.class);

@@ -1,7 +1,9 @@
 // Main Page
 class Main {
+  maxId = 7;
   constructor() {
     this.content = $('body');
+    this.avaId = Math.floor(Math.random() * this.maxId);
   }
 
   initMainPage() {
@@ -20,7 +22,7 @@ class Main {
 
     const avatar = createAndAppend('avatar', col);
     const avatarImg = createElement(null, 'img');
-    avatarImg.src = 'assets/avatar1.png';
+    avatarImg.src = this.getAvaSrc();
     avatar.append(avatarImg);
 
     const arrow = createAndAppend('arrow', avatar);
@@ -28,6 +30,12 @@ class Main {
     const arrowImg = createElement(null, 'img');
     arrowImg.src = 'assets/arrow.png';
     arrowImg.height='30';
+    $(arrowImg).click(function(){
+        if (++this.avaId > this.maxId) {
+            this.avaId = 0;
+        }
+        avatarImg.src = this.getAvaSrc();
+    }.bind(this));
     arrow.append(arrowImg);
 
     col = createAndAppend('col-8 d-flex justify-content-around', row);
@@ -63,9 +71,9 @@ class Main {
     this.action.click(function(){
       if(this.nameInput.val()) {
         if(this.isCodeEmpty()) {
-          window.ws.createLobby(this.nameInput.val());
+          window.ws.createLobby(this.nameInput.val(), this.avaId);
         } else {
-          window.ws.joinLobby(this.nameInput.val(), this.codeInput.val());
+          window.ws.joinLobby(this.nameInput.val(), this.codeInput.val(), this.avaId);
         }
         window.lobby.initLobbyPage();
       } else {
@@ -76,5 +84,9 @@ class Main {
 
   isCodeEmpty() {
     return this.codeInput.val().length == 0;
+  }
+
+  getAvaSrc() {
+    return 'ava/ava' + this.avaId + '.png';
   }
 }

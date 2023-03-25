@@ -20,16 +20,19 @@ class WebSocketWrapper {
         this.stompClient.connect({}, onConnect.bind(this));
     }
 
-    createLobby(creatorName) {
+    createLobby(creatorName, avaId) {
+    console.log(avaId);
         this.stompClient.send('/app/game/lobby/create', {}, JSON.stringify({
-            'name': creatorName
+            'name': creatorName,
+            'avatarId': avaId
         }));
     }
 
-    joinLobby(creatorName, lobbyId) {
+    joinLobby(creatorName, lobbyId, avaId) {
         this.stompClient.send('/app/game/lobby/join', {}, JSON.stringify({
             'lobbyId': lobbyId,
-            'name': creatorName
+            'name': creatorName,
+            'avatarId': avaId
         }));
     }
 

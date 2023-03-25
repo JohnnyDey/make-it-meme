@@ -11,6 +11,7 @@ public class LobbyRequest {
     private String lobbyId;
     private LobbyDto lobby;
     private String name;
+    private String avatarId;
 
     public LobbyRequest(LobbyDto lobby) {
         this.lobby = lobby;
