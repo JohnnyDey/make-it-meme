@@ -45,6 +45,8 @@ class Creation {
                 const cap = $(text);
                 this.caps.push(cap);
                 cap.bind('input propertychange', function() {
+                    cap.height(0);
+                    cap.height(cap[0].scrollHeight);
                     this.canvas.restartCanvas();
                     for (let cap of this.caps) {
                         if (cap.val()) {

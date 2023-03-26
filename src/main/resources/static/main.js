@@ -12,7 +12,7 @@ class Main {
     this.content.append(content);
 
     const container = createAndAppend('container py-5', content);
-    let row = createAndAppend('row row-cols-1 justify-content-center gy-5', container);
+    let row = createAndAppend('row row-cols-1 justify-content-center gy-5', container, 'form');
     let col = createAndAppend('col d-flex justify-content-around', row);
     const logo = createElement('logo', 'img');
     logo.src = 'assets/logo.png';
@@ -44,6 +44,7 @@ class Main {
     nameInput.type = 'text';
     nameInput.placeholder = 'Введите имя';
     nameInput.maxLength = 15;
+    nameInput.required = true;
     col.append(nameInput);
     this.nameInput = $(nameInput);
 
@@ -76,8 +77,6 @@ class Main {
           window.ws.joinLobby(this.nameInput.val(), this.codeInput.val(), this.avaId);
         }
         window.lobby.initLobbyPage();
-      } else {
-        alert('Необходимо ввести имя.');
       }
     }.bind(this));
   }

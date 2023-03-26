@@ -11,4 +11,5 @@ public class MemeDto {
     private Cap[] caps;
     private String img;
     private Integer[] grades;
+    private Integer score;
 }

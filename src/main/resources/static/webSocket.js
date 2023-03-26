@@ -21,7 +21,6 @@ class WebSocketWrapper {
     }
 
     createLobby(creatorName, avaId) {
-    console.log(avaId);
         this.stompClient.send('/app/game/lobby/create', {}, JSON.stringify({
             'name': creatorName,
             'avatarId': avaId

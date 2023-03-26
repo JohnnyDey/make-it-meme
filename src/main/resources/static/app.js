@@ -16,8 +16,8 @@ $(function () {
     window.main.initMainPage();
 });
 
-function createAndAppend(cl, parent) {
-    const elem = createElement(cl);
+function createAndAppend(cl, parent, type) {
+    const elem = createElement(cl, type);
     parent.append(elem);
     return elem;
 }

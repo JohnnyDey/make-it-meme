@@ -48,7 +48,7 @@ class Grade {
         this.canvas.updateImage(this.meme.img, afterLoad)
      }
 
-     onGrade() {
+     onGrade(score) {
         window.ws.gradeMeme(this.meme.lobbyId, score);
      }
 }

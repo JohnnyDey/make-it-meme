@@ -70,7 +70,8 @@ public class GameController {
         Lobby lobby = lobbyStorage.getLobby(lobbyId);
         lobby.runInLock(() -> {
             Meme meme = lobby.getMemeToGrade().orElseThrow();
-            meme.grade(request.getGrade(), lobby.getPlayers().size());
+            Player player = lobby.getPlayerById(principal.getName());
+            meme.grade(request.getGrade(), lobby.getPlayers().size(), player);
         });
     }
 }
