@@ -12,7 +12,7 @@ class Canvas {
         let fontSize;
         do {
             lines++;
-            fontSize = cap.height / lines;
+            fontSize = Math.min(50, cap.height / lines);
             this.ctx.font = fontSize + "px Arial";
             strings = text.split("\n");
             strings = strings.flatMap(v => this.splitByMaxWidth(v, cap.width));

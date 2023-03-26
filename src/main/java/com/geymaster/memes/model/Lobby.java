@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.geymaster.memes.storage.MemeStorage.MemeCategory.ALL;
+
 @Getter
 public class Lobby {
     private final String id;
@@ -44,9 +46,9 @@ public class Lobby {
         for (int i = 0; i < config.getRoundCount(); i ++) {
             Round round = new Round();
             if (config.isOneMeme()) {
-                round.init(players, MemeStorage.getRandomMeme());
+                round.init(players, MemeStorage.getRandomMeme(ALL));
             } else {
-                players.forEach((p) -> round.init(p, MemeStorage.getRandomMeme()));
+                players.forEach((p) -> round.init(p, MemeStorage.getRandomMeme(ALL)));
             }
             rounds.add(round);
         }

@@ -24,7 +24,7 @@ public class LobbyStorage {
 
     private String generateId() {
         while (true) {
-            String randomString = RandomStringUtils.random(4, true, false);
+            String randomString = RandomStringUtils.random(5, "ABCDEFHIJKLMNOPQRSTVWXYZ");
             if (lobbies.get(randomString) == null) {
                 return randomString;
             }
