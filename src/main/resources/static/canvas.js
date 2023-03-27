@@ -31,6 +31,10 @@ class Canvas {
     fillText(fontSize, strings, initX, initY) {
         let y = initY;
         for (let i = 0; i < strings.length; i++) {
+            this.ctx.strokeStyle = 'black';
+            this.ctx.lineWidth = fontSize/10;
+            this.ctx.strokeText(strings[i], initX, y);
+            this.ctx.fillStyle = 'white';
             this.ctx.fillText(strings[i], initX, y);
             y += fontSize;
         }
@@ -60,6 +64,7 @@ class Canvas {
                 afterLoad();
             }
         };
-        this.img.src = window.location + src;
+        console.log(window.origin + "/" + src);
+        this.img.src = window.origin + "/" + src;
     }
 }
