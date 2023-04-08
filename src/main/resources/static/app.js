@@ -9,6 +9,7 @@ function initWrappers() {
   window.lobby = new Lobby();
   window.creation = new Creation();
   window.grade = new Grade();
+  window.results = new Results();
 }
 
 $(function () {

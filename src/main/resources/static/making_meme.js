@@ -21,10 +21,11 @@ class Creation {
         this.initContent(row);
     }
 
-    updateState(lobby) {
+    updateState(lobby, id) {
+        this.id = id;
         this.lobby = lobby;
         this.initCreation();
-        this.canvas.updateImage(this.lobby.rounds[0].memes[0].img);
+        this.canvas.updateImage(this.getMeme().img);
     }
 
     initContent(parent) {
@@ -33,7 +34,7 @@ class Creation {
 
         col = createAndAppend('col make-text', parent);
         if (this.lobby) {
-            const memeCaps = this.lobby.rounds[0].memes[0].caps;
+            const memeCaps = this.getMeme().caps;
 
             this.caps = [];
             let textCount = memeCaps.length;
@@ -83,9 +84,14 @@ class Creation {
     }
 
     onSubmit() {
+        clearInterval(this.timer);
         window.ws.submitMeme(this.lobby.id, this.caps.map(v => v.val()));
         $(this.container).empty();
         const row = createAndAppend('row py-5', this.container);
         row.innerText = 'Ты создал шедевр! Можешь отдохнуть, поку другие трудятся.';
+    }
+
+    getMeme() {
+        return this.lobby.round.memes.find(m => m.playerId == this.id);
     }
 }

@@ -7,7 +7,7 @@ $(function () {
         window.fakeLobby = {
            id: 'fake',
            config: {},
-           rounds: [{
+           round: [{
                memes: [data]
            }]
          }

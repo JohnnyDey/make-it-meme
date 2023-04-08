@@ -1,0 +1,10 @@
+.avatar-image{
+    width: 31px;
+    height: 31px;
+}
+
+.player-score{
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: 15px;
+    border: solid 2px white;
+}

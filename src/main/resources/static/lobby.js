@@ -125,8 +125,13 @@ class Lobby {
         return col;
     }
 
-    addPlayer(playerName, avatarId) {
+    addPlayer(playerName, avatarId, playerId) {
         const player = createAndAppend('player', this.lobbyList);
+        if (this.asLeader) {
+            $(player).click(function() {
+                window.ws.kickPlayer(this.id, playerId);
+            }.bind(this));
+        }
         const avatar = createElement('player-avatar')
         player.append(avatar);
         const avatarImg = createElement(null, 'img')
@@ -146,7 +151,7 @@ class Lobby {
         this.initLobbySettings(this.listAndSettingsParent);
         this.clearPlayerList();
         for (const player of lobby.players) {
-            this.addPlayer(player.name, player.avatarId);
+            this.addPlayer(player.name, player.avatarId, player.id);
         }
         const limit = $('#limit');
         for (let i = 0; i < limit.val() - lobby.players.length; i++) {

@@ -6,6 +6,7 @@ import com.geymaster.memes.messages.MemeRequest;
 import com.geymaster.memes.model.Lobby;
 import com.geymaster.memes.model.Meme;
 import com.geymaster.memes.model.Player;
+import com.geymaster.memes.model.Round;
 import com.geymaster.memes.storage.LobbyStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -21,6 +22,8 @@ import java.util.concurrent.ScheduledFuture;
 
 @Controller
 public class GameController {
+    private static final int GRADE_TIME = 45;
+    private static final int RESULTS_TIME = 50;
 
     @Autowired private SimpMessagingTemplate template;
 
@@ -33,22 +36,8 @@ public class GameController {
         Lobby lobby = lobbyStorage.getLobby(lobbyId);
         lobby.runInLock(() -> {
             lobby.init(request.getLobby().getConfig());
-            lobby.getPlayers().forEach(p -> template.convertAndSendToUser(p.getId(), "/creation",
-                    new LobbyRequest(lobby.toDto())));
-            scheduleEndOfTheTurn(lobby);
+            startCreation(lobby);
         });
-    }
-
-    private void scheduleEndOfTheTurn(Lobby lobby) {
-        ScheduledFuture<?> future = scheduler.schedule(() -> startGrade(lobby),
-                Instant.now().plusSeconds(lobby.getConfig().getTimer() + 1));
-        lobby.setFuture(future);
-    }
-
-    private void startGrade(Lobby lobby){
-        lobby.getLastRound().created();
-        lobby.getPlayers().forEach(p -> template.convertAndSendToUser(p.getId(), "/grade",
-                new MemeRequest(lobby.getMemeToGrade().orElseThrow(), lobby.getId())));
     }
 
     @MessageMapping("/game/{lobbyId}/submit")
@@ -59,6 +48,7 @@ public class GameController {
             Meme meme = lobby.getLastRound().getMemes().get(player);
             meme.submit(Arrays.stream(request.getLines()).toList());
             if (lobby.isAllMemesSubmitted()) {
+                lobby.getLastRound().created();
                 lobby.getFuture().cancel(true);
                 startGrade(lobby);
             }
@@ -69,9 +59,50 @@ public class GameController {
     public void grade(GradeRequest request, Principal principal, @DestinationVariable String lobbyId) {
         Lobby lobby = lobbyStorage.getLobby(lobbyId);
         lobby.runInLock(() -> {
-            Meme meme = lobby.getMemeToGrade().orElseThrow();
+            Meme meme = lobby.getMemeToGradeUnsafe();
             Player player = lobby.getPlayerById(principal.getName());
-            meme.grade(request.getGrade(), lobby.getPlayers().size(), player);
+            meme.grade(request.getGrade(), player);
         });
+    }
+
+    private void scheduleGrade(Lobby lobby, int time) {
+        ScheduledFuture<?> future = scheduler.schedule(() -> startGrade(lobby), Instant.now().plusSeconds(time + 1));
+        lobby.setFuture(future);
+    }
+
+    private void startGrade(Lobby lobby) {
+        Meme possiblyGradingMeme = lobby.getMemeToGradeUnsafe();
+        if (possiblyGradingMeme.isGrading()) {
+            possiblyGradingMeme.grade();
+        }
+        if (!lobby.isAllGradesSubmitted()) {
+            Meme memeToGrade = lobby.getMemeToGradeUnsafe();
+            memeToGrade.grading();
+            lobby.getPlayers().forEach(p -> template.convertAndSendToUser(p.getId(), "/grade",
+                    new MemeRequest(memeToGrade, lobby.getId())));
+            scheduleGrade(lobby, GRADE_TIME);
+        } else {
+            startResults(lobby);
+        }
+    }
+
+    private void startResults(Lobby lobby){
+        Round lastRound = lobby.getLastRound();
+        lastRound.getMemes().forEach((player, meme) -> {
+            meme.calculateScore();
+            player.addScore(meme);
+        });
+        lobby.getPlayers().forEach(p -> template.convertAndSendToUser(p.getId(), "/results",
+                new LobbyRequest(lobby.toDto())));
+        lastRound.graded();
+        scheduler.schedule(() -> startCreation(lobby), Instant.now().plusSeconds(RESULTS_TIME));
+    }
+
+    private void startCreation(Lobby lobby){
+        if (lobby.isLastRoundExist()) {
+            lobby.getPlayers().forEach(p -> template.convertAndSendToUser(p.getId(), "/creation",
+                    new LobbyRequest(lobby.toDto())));
+            scheduleGrade(lobby, lobby.getConfig().getTimer());
+        }
     }
 }

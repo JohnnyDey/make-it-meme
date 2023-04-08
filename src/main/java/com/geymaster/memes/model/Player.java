@@ -8,8 +8,7 @@ public class Player {
     private final String id;
     private final String name;
     private final String avatarId;
-    @Setter
-    private int score;
+    private int score = 0;
     @Setter
     private boolean leader;
 
@@ -24,5 +23,9 @@ public class Player {
         this.name = name;
         this.leader = leader;
         this.avatarId = avatarId;
+    }
+
+    public void addScore(Meme meme) {
+        score += meme.getScore();
     }
 }

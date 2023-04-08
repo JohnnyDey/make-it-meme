@@ -16,8 +16,7 @@ public class Meme implements Cloneable {
     private String img;
     private final Map<Player, Integer> grades;
     private MemeStatus status;
-    private Integer score;
-
+    private Integer score = 0;
 
     public Meme() {
         lines = new ArrayList<>();
@@ -25,11 +24,13 @@ public class Meme implements Cloneable {
         status = MemeStatus.NEW;
     }
 
-    public MemeDto toDto(){
+    public MemeDto toDto(String playerId){
         MemeDto memeDto = new MemeDto();
         memeDto.setCaps(caps.toArray(new Cap[0]));
         memeDto.setImg(img);
         memeDto.setLines(lines.toArray(new String[0]));
+        memeDto.setPlayerId(playerId);
+        memeDto.setScore(this.score);
         return memeDto;
     }
 
@@ -38,25 +39,31 @@ public class Meme implements Cloneable {
         status = MemeStatus.SUBMITTED;
     }
 
-    public boolean grade(Integer grade, int lobbyCap, Player player) {
+    public void grade(Integer grade, Player player) {
         grades.put(player, grade);
-        if (grades.size() >= lobbyCap) {
-            status = MemeStatus.GRADED;
-            score = getScore();
-            return true;
-        }
-        return false;
     }
 
-    private int getScore() {
+    public void calculateScore() {
         AtomicInteger result = new AtomicInteger();
         grades.values().stream().filter(g -> g == 1).forEach(g -> result.addAndGet(100));
         grades.values().stream().filter(g -> g == -1).forEach(g -> result.addAndGet(-100));
-        return result.get();
+        score = result.get();
+    }
+
+    public void grading() {
+        status = MemeStatus.GRADING;
+    }
+
+    public void grade() {
+        status = MemeStatus.GRADED;
     }
 
     public boolean isSubmitted() {
         return status == MemeStatus.SUBMITTED;
+    }
+
+    public boolean isGrading() {
+        return status == MemeStatus.GRADING;
     }
 
     public boolean isGraded() {
@@ -75,6 +82,7 @@ public class Meme implements Cloneable {
     enum MemeStatus{
         NEW,
         SUBMITTED,
+        GRADING,
         GRADED
     }
 }

@@ -15,6 +15,11 @@ h1
     color: aqua;
 }
 
+canvas
+{
+    max-width: 550px;
+}
+
 .button
 {
     font-family: Yanone-Regular;
@@ -94,3 +99,18 @@ select
     height: 40px;
 }
 
+.player-avatar
+{
+    width: 35px;
+    height: 35px;
+
+    border: solid white 2px;
+    border-radius: 100%;
+    background-color: rgba(255, 255, 255, .3);
+}
+
+.backgrounded
+{
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: 25px;
+}

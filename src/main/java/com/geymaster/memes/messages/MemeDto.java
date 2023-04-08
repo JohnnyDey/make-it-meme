@@ -12,4 +12,5 @@ public class MemeDto {
     private String img;
     private Integer[] grades;
     private Integer score;
+    private String playerId;
 }

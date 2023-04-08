@@ -10,7 +10,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
-import java.util.List;
+import java.util.function.Consumer;
 
 @Controller
 public class LobbyController {
@@ -22,20 +22,39 @@ public class LobbyController {
     @MessageMapping("/game/lobby/create")
     public void create(LobbyRequest request, Principal principal) {
         Lobby lobby = lobbyStorage.create();
-        lobby.getPlayers().add(new Player(principal.getName(), request.getName(), request.getAvatarId(), true));
+        Player player = new Player(principal.getName(), request.getName(), request.getAvatarId(), true);
+        lobby.getPlayers().add(player);
         template.convertAndSendToUser(principal.getName(), "/lobby", new LobbyRequest(lobby.toDto()));
     }
 
     @MessageMapping("/game/lobby/join")
     public void join(LobbyRequest request, Principal principal) {
         Lobby lobby = lobbyStorage.getLobby(request.getLobbyId());
+        lobby.checkLeader(principal);
         lobby.runInLock(() -> {
-            List<Player> players = lobby.getPlayers();
-            if (players.stream().anyMatch(p -> p.getId().equals(principal.getName()))) {
+            if (lobby.hasPlayer(principal.getName())) {
                 throw new IllegalArgumentException("Player Already exists");
             }
-            players.add(new Player(principal.getName(), request.getName(), request.getAvatarId()));
-            players.forEach(p -> template.convertAndSendToUser(p.getId(), "/lobby", new LobbyRequest(lobby.toDto())));
+            Player player = new Player(principal.getName(), request.getName(), request.getAvatarId());
+            lobby.getPlayers().add(player);
+            notifyPlayers(lobby);
         });
+    }
+
+    @MessageMapping("/game/lobby/kick")
+    public void kick(LobbyRequest request, Principal principal) {
+        Lobby lobby = lobbyStorage.getLobby(request.getLobbyId());
+        lobby.checkLeader(principal);
+        lobby.runInLock(()-> {
+            Player player = lobby.getPlayerById(request.getName());
+            lobby.getPlayers().remove(player);
+            notifyPlayers(lobby);
+        });
+    }
+
+    private void notifyPlayers(Lobby lobby) {
+        Consumer<Player> notify = p -> template.convertAndSendToUser(p.getId(),
+                "/lobby", new LobbyRequest(lobby.toDto()));
+        lobby.getPlayers().forEach(notify);
     }
 }

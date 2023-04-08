@@ -19,7 +19,10 @@ public class Round {
 
     public void init(List<Player> players, Meme meme) {
         status = RoundStatus.NEW;
-        players.forEach(p -> memes.put(p, meme.clone()));
+        players.forEach(p -> {
+            Meme memeClone = meme.clone();
+            memes.put(p, memeClone);
+        });
     }
 
     public void init(Player player, Meme meme) {
@@ -41,7 +44,9 @@ public class Round {
 
     public RoundDto toDto() {
         RoundDto roundDto = new RoundDto();
-        roundDto.setMemes(memes.values().stream().map(Meme::toDto).toList().toArray(new MemeDto[0]));
+        MemeDto[] memeDtos = memes.entrySet().stream()
+                .map((e) -> e.getValue().toDto(e.getKey().getId())).toList().toArray(new MemeDto[0]);
+        roundDto.setMemes(memeDtos);
         return roundDto;
     }
     enum RoundStatus {

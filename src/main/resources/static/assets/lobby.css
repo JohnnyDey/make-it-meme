@@ -2,7 +2,7 @@
 {
     border-radius: 10px;
     background-color: rgba(255, 255, 255, .3);
-    height: 500px;
+    min-height: 500px;
     overflow-y: scroll;
     scrollbar-color: #a18cd1 #F5F5F5;
 }
@@ -54,12 +54,3 @@
     grid-template-columns: 60px calc(100% - 60px);
 }
 
-.player-avatar
-{
-    width: 35px;
-    height: 35px;
-
-    border: solid white 2px;
-    border-radius: 100%;
-    background-color: rgba(255, 255, 255, .3);
-}

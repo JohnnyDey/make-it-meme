@@ -1,11 +1,11 @@
 package com.geymaster.memes.model;
 
 import com.geymaster.memes.messages.LobbyDto;
-import com.geymaster.memes.messages.RoundDto;
 import com.geymaster.memes.storage.MemeStorage;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,16 +29,32 @@ public class Lobby {
     }
 
     public Round getLastRound() {
-        return rounds.stream().filter(r -> r.getStatus() != Round.RoundStatus.GRADED).findFirst().orElseThrow();
+        return getRound().orElse(new Round());
+    }
+
+    public boolean isLastRoundExist() {
+        return getRound().isPresent();
+    }
+
+    private Optional<Round> getRound() {
+        return rounds.stream().filter(r -> r.getStatus() != Round.RoundStatus.GRADED).findFirst();
     }
 
     public boolean isAllMemesSubmitted() {
         return getLastRound().getMemes().values().stream().allMatch(Meme::isSubmitted);
     }
 
+    public boolean isAllGradesSubmitted() {
+        return getLastRound().getMemes().values().stream().allMatch(Meme::isGraded);
+    }
+
     public Optional<Meme> getMemeToGrade() {
         return getLastRound().getMemes().values().stream().filter(meme -> !meme.isGraded())
                 .findFirst();
+    }
+
+    public Meme getMemeToGradeUnsafe() {
+        return getMemeToGrade().orElseThrow();
     }
 
     public void init(Config config) {
@@ -55,12 +71,25 @@ public class Lobby {
     }
 
     public LobbyDto toDto() {
-        List<RoundDto> roundDtos = rounds.stream().map(Round::toDto).toList();
-        return new LobbyDto(id, players.toArray(new Player[0]), roundDtos.toArray(new RoundDto[0]), config);
+        return new LobbyDto(id, players.toArray(new Player[0]), getLastRound().toDto(), config);
     }
 
     public Player getPlayerById(String id) {
-        return players.stream().filter(player -> player.getId().equals(id)).findFirst().orElseThrow();
+        return getPlayerByIdSafe(id).orElseThrow();
+    }
+
+    public boolean hasPlayer(String id){
+        return getPlayerByIdSafe(id).isPresent();
+    }
+
+    private Optional<Player> getPlayerByIdSafe(String id){
+        return players.stream().filter(player -> player.getId().equals(id)).findFirst();
+    }
+
+    public void checkLeader(Principal principal) {
+        if (players.get(0).getId().equals(principal.getName())){
+            throw new IllegalArgumentException("Запрос сделан не лидером");
+        }
     }
 
     public void runInLock(Runnable runnable) {

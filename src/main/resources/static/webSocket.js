@@ -10,10 +10,13 @@ class WebSocketWrapper {
                 window.lobby.updateState(lobby, lobby.leaderId == creds);
             });
             this.stompClient.subscribe('/user/' + creds + '/creation', function(resp) {
-                window.creation.updateState(JSON.parse(resp.body).lobby);
+                window.creation.updateState(JSON.parse(resp.body).lobby, creds);
             });
             this.stompClient.subscribe('/user/' + creds + '/grade', function(resp) {
                 window.grade.initGradePage(JSON.parse(resp.body));
+            });
+            this.stompClient.subscribe('/user/' + creds + '/results', function(resp) {
+                window.results.initResults(JSON.parse(resp.body).lobby);
             });
         }
 
@@ -60,5 +63,12 @@ class WebSocketWrapper {
         this.stompClient.send(`/app/game/${lobbyId}/grade`, {}, JSON.stringify({
             'grade': grade,
         }));
+    }
+
+    kickPlayer(lobbyId, playerId){
+         this.stompClient.send('/app/game/lobby/kick', {}, JSON.stringify({
+            'lobbyId': lobbyId,
+            'name': playerId,
+         }));
     }
 }

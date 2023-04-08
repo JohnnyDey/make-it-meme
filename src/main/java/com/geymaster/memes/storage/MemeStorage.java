@@ -2,11 +2,11 @@ package com.geymaster.memes.storage;
 
 import com.geymaster.memes.model.Meme;
 import com.google.gson.Gson;
-import org.springframework.util.ResourceUtils;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.file.Files;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MemeStorage {
@@ -14,12 +14,13 @@ public class MemeStorage {
     public static Meme getRandomMeme(MemeCategory... categories) {
         MemeCategory category = getRandomCategory(categories);
         int memeNumber = getRandomMeme(category);
-        String path = String.format("%sstatic/memes/meme%s/config.json", ResourceUtils.CLASSPATH_URL_PREFIX, memeNumber);
-        try (Reader reader = Files.newBufferedReader(ResourceUtils.getFile(path).toPath())) {
+        String pathString = String.format("static/memes/meme%s/config.json", memeNumber);
+        try (Reader reader = new InputStreamReader(new ClassPathResource(pathString).getInputStream())) {
             return new Gson().fromJson(reader, Meme.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     private static MemeCategory getRandomCategory(MemeCategory... categories){
@@ -35,8 +36,8 @@ public class MemeStorage {
     }
 
     public enum MemeCategory {
-        CARTOON(100, 120),
-        ALL(100, 120);
+        CARTOON(100, 200),
+        ALL(100, 200);
 
         final int start;
         final int end;

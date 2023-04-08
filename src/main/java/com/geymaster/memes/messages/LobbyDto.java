@@ -15,13 +15,13 @@ public class LobbyDto {
     private String id;
     private String leaderId;
     private Player[] players;
-    private RoundDto[] rounds;
+    private RoundDto round;
     private Config config;
 
-    public LobbyDto(String id, Player[] players, RoundDto[] rounds, Config config) {
+    public LobbyDto(String id, Player[] players, RoundDto round, Config config) {
         this.id = id;
         this.players = players;
-        this.rounds = rounds;
+        this.round = round;
         this.config = config;
         Arrays.stream(players).filter(Player::isLeader).findFirst().ifPresent(p -> leaderId = p.getId());
     }
