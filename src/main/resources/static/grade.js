@@ -12,6 +12,9 @@ class Grade {
         this.content.append(content);
 
         const container = createAndAppend('content-grade container py-5', content);
+        this.timer = new Timer(container);
+        this.timer.initTimer(15);
+
         let row = createAndAppend('row row-cols-1 justify-content-center gy-3', container);
         let col = createAndAppend('col-auto d-flex', row);
         this.canvas.initCanvas(col);

@@ -6,7 +6,7 @@ class Lobby {
                    {name: '150 секунд', value: 150},
                    {name: '180 секунд', value: 180},
                    {name: 'без ограничений', value: 0}];
-   roundCount = [ {name: '2', value: 2},
+    roundCount = [ {name: '2', value: 2},
                   {name: '5', value: 5},
                   {name: '7', value: 7, selected: true},
                   {name: '10', value: 10},
@@ -31,23 +31,17 @@ class Lobby {
         this.content.append(content);
 
         const container = createAndAppend('container py-5', content);
-        this.listAndSettingsParent = createAndAppend('row row-cols-1 row-cols-lg-2 justify-content-around g-3', container);
+        this.listAndSettingsParent = createAndAppend('row row-cols-1 row-cols-lg-12 justify-content-around g-3', container);
 
         this.initLobbyList(this.listAndSettingsParent);
         this.initLobbySettings(this.listAndSettingsParent);
     }
 
     initLobbyList(parent) {
-        this.lobbyList = createElement('col lobby-list');
+        this.lobbyList = createElement('col col-lg-4 lobby-list');
         parent.append(this.lobbyList);
 
         this.lobbyList.append(createElement(null, 'h1', 'Игроки'));
-        const limit = this.createDropDown(this.playerLimits, 'limit');
-        limit.disabled = !this.asLeader;
-        $(limit).change(function() {
-            this.updateState(this.lobby, this.asLeader);
-        }.bind(this));
-        this.lobbyList.append(limit);
         this.addPlayer('Лидер лобби');
     }
 
@@ -77,7 +71,7 @@ class Lobby {
         if (parent.children[1]) {
             parent.removeChild(parent.children[1]);
         }
-        let col = createAndAppend('col gx-lg-5', parent);
+        let col = createAndAppend('col col-lg-8 gx-lg-5', parent);
         let row = createAndAppend('row row-cols-1 lobby-settings', col);
         if (this.asLeader) {
             row.append(this.createDropDown(this.roundDuration, this.ROUND_DURATION_ID, 'Длительность создания мемов'));
@@ -125,23 +119,38 @@ class Lobby {
         return col;
     }
 
-    addPlayer(playerName, avatarId, playerId) {
-        const player = createAndAppend('player', this.lobbyList);
-        if (this.asLeader) {
-            $(player).click(function() {
-                window.ws.kickPlayer(this.id, playerId);
-            }.bind(this));
-        }
-        const avatar = createElement('player-avatar')
-        player.append(avatar);
-        const avatarImg = createElement(null, 'img')
-        if (avatarId) {
-            avatarImg.src = 'ava/ava' + avatarId + '.png';
+    addPlayer(player) {
+        const playerBlock = createAndAppend('row justify-content-between p-1 player', this.lobbyList);
+        const avatarBlock = createAndAppend('col col-auto g-0', playerBlock);
+        const avatarImg = createElement('player-avatar', 'img')
+        if (player.avatarId) {
+            avatarImg.src = 'ava/ava' + player.avatarId + '.png';
             avatarImg.width = 31;
             avatarImg.height = 31;
-            avatar.append(avatarImg);
+            avatarBlock.append(avatarImg);
         }
-        player.append(playerName);
+        avatarBlock.append(player.name);
+
+        const actionBlock = createAndAppend('col col-auto d-flex align-content-center flex-wrap g-0', playerBlock);
+        this.addAction(player.leader, actionBlock);
+
+         if (this.asLeader) {
+            $(actionBlock).click(function() {
+                window.ws.kickPlayer(this.id, player.id);
+            }.bind(this));
+        }
+    }
+
+    addAction(isLeader, parent) {
+        if(this.asLeader || isLeader) {
+            const action = createAndAppend('col material-icons', parent, 'span');
+            if (isLeader) {
+                action.innerText = 'stars';
+            } else {
+                action.classList.add("icon-close");
+                action.innerText = 'cancel';
+            }
+        }
     }
 
     updateState(lobby, asLeader) {
@@ -151,11 +160,7 @@ class Lobby {
         this.initLobbySettings(this.listAndSettingsParent);
         this.clearPlayerList();
         for (const player of lobby.players) {
-            this.addPlayer(player.name, player.avatarId, player.id);
-        }
-        const limit = $('#limit');
-        for (let i = 0; i < limit.val() - lobby.players.length; i++) {
-            this.addPlayer('Пусто');
+            this.addPlayer(player);
         }
     }
 

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
@@ -15,12 +16,17 @@ public class Meme implements Cloneable {
     private final List<Cap> caps = new ArrayList<>();
     private String img;
     private final Map<Player, Integer> grades;
+    private final List<Player> buddies;
     private MemeStatus status;
     private Integer score = 0;
+    private int plusMeme;
+    private int plusBuddy;
+    private int plusHasBuddy;
 
     public Meme() {
         lines = new ArrayList<>();
         grades = new HashMap<>();
+        buddies = new ArrayList<>();
         status = MemeStatus.NEW;
     }
 
@@ -31,6 +37,9 @@ public class Meme implements Cloneable {
         memeDto.setLines(lines.toArray(new String[0]));
         memeDto.setPlayerId(playerId);
         memeDto.setScore(this.score);
+        memeDto.setPlusMeme(this.plusMeme);
+        memeDto.setPlusBuddy(this.plusBuddy);
+        memeDto.setPlusHasBuddy(this.plusHasBuddy);
         return memeDto;
     }
 
@@ -43,11 +52,32 @@ public class Meme implements Cloneable {
         grades.put(player, grade);
     }
 
-    public void calculateScore() {
+    public void buddy(Player player){
+        buddies.add(player);
+    }
+
+    public void calculateTotalScore(Player player, Round round) {
+        calculateBuddyScore(player, round);
+        score += plusBuddy;
+        calculateHasBuddy();
+        score += plusHasBuddy;
+    }
+
+    public void calculatePreliminaryScore() {
         AtomicInteger result = new AtomicInteger();
         grades.values().stream().filter(g -> g == 1).forEach(g -> result.addAndGet(100));
         grades.values().stream().filter(g -> g == -1).forEach(g -> result.addAndGet(-100));
-        score = result.get();
+        plusMeme = result.get();
+        score += plusMeme;
+    }
+
+    private void calculateBuddyScore(Player player, Round round) {
+        round.getMemes().values().stream().filter(m -> m.getBuddies().contains(player)).findFirst()
+                .ifPresent((m) -> this.plusBuddy = m.getScore() / 2);
+    }
+
+    private void calculateHasBuddy() {
+        plusHasBuddy = buddies.size() * 10;
     }
 
     public void grading() {

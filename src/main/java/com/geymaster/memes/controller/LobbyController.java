@@ -30,7 +30,6 @@ public class LobbyController {
     @MessageMapping("/game/lobby/join")
     public void join(LobbyRequest request, Principal principal) {
         Lobby lobby = lobbyStorage.getLobby(request.getLobbyId());
-        lobby.checkLeader(principal);
         lobby.runInLock(() -> {
             if (lobby.hasPlayer(principal.getName())) {
                 throw new IllegalArgumentException("Player Already exists");

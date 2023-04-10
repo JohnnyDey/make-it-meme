@@ -12,12 +12,7 @@ h1
     font-family: Yanone-Regular;
     font-size: 30px;
 
-    color: aqua;
-}
-
-canvas
-{
-    max-width: 550px;
+    color: rgb(255, 255, 255);
 }
 
 .button
@@ -52,6 +47,8 @@ body
     background-repeat: no-repeat;
     background-attachment: fixed;
     font-family: Yanone-Regular;
+    color: white;
+    font-size: 22px;
     background: linear-gradient(360deg,#3c2974 30%, #7a0085 100%);
 }
 
@@ -67,7 +64,8 @@ body
 .text
 {
     font-family: Yanone-Regular;
-    font-size: 20px;
+    font-size: 25px;
+    color: rgb(255, 255, 255);
 
     width: 100%;
     height: 50px;
@@ -82,7 +80,7 @@ body
 button
 {
     font-family: Yanone-Regular;
-    font-size: 20px;
+    font-size: 25px;
 
     width: 100%;
     padding: 5px;
@@ -92,19 +90,24 @@ button
     border-radius: 10px;
     background-color: rgb(255, 255, 255);
 }
+table
+{
+    font-size: 18px;
+}
 
 select
 {
     width: 90%;
     height: 40px;
+    font-size: 20px !important;
 }
-
 .player-avatar
 {
-    width: 35px;
-    height: 35px;
+    width: 50px;
+    height: 50px;
+    margin: 0 15px 0 0;
 
-    border: solid white 2px;
+    border: solid white 3px;
     border-radius: 100%;
     background-color: rgba(255, 255, 255, .3);
 }

@@ -17,7 +17,7 @@
 {
     cursor: pointer;
 
-    border: solid 3px #0006c;
+    border: solid 3px;
     box-shadow: 6px 6px 2px 1px rgba(0, 0, 0, .2);
 }
 
@@ -30,6 +30,6 @@
     height: 25px;
 
     border-radius: 100%;
-    background-color: #0006c;
+    pointer-events: none;
 }
 

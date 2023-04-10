@@ -87,7 +87,7 @@ public class Lobby {
     }
 
     public void checkLeader(Principal principal) {
-        if (players.get(0).getId().equals(principal.getName())){
+        if (!players.get(0).getId().equals(principal.getName())){
             throw new IllegalArgumentException("Запрос сделан не лидером");
         }
     }

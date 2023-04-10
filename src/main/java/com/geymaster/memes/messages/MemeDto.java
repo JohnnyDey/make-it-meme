@@ -13,4 +13,7 @@ public class MemeDto {
     private Integer[] grades;
     private Integer score;
     private String playerId;
+    private int plusMeme;
+    private int plusBuddy;
+    private int plusHasBuddy;
 }

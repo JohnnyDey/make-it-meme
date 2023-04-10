@@ -18,11 +18,12 @@ import org.springframework.stereotype.Controller;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 @Controller
 public class GameController {
-    private static final int GRADE_TIME = 45;
+    private static final int GRADE_TIME = 15;
     private static final int RESULTS_TIME = 50;
 
     @Autowired private SimpMessagingTemplate template;
@@ -65,6 +66,16 @@ public class GameController {
         });
     }
 
+    @MessageMapping("/game/{lobbyId}/buddy")
+    public void buddy(Principal principal, @DestinationVariable String lobbyId) {
+        Lobby lobby = lobbyStorage.getLobby(lobbyId);
+        lobby.runInLock(() -> {
+            Meme meme = lobby.getMemeToGradeUnsafe();
+            Player player = lobby.getPlayerById(principal.getName());
+            meme.buddy(player);
+        });
+    }
+
     private void scheduleGrade(Lobby lobby, int time) {
         ScheduledFuture<?> future = scheduler.schedule(() -> startGrade(lobby), Instant.now().plusSeconds(time + 1));
         lobby.setFuture(future);
@@ -89,7 +100,10 @@ public class GameController {
     private void startResults(Lobby lobby){
         Round lastRound = lobby.getLastRound();
         lastRound.getMemes().forEach((player, meme) -> {
-            meme.calculateScore();
+            meme.calculatePreliminaryScore();
+        });
+        lastRound.getMemes().forEach((player, meme) -> {
+            meme.calculateTotalScore(player, lastRound);
             player.addScore(meme);
         });
         lobby.getPlayers().forEach(p -> template.convertAndSendToUser(p.getId(), "/results",

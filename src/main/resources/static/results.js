@@ -11,6 +11,9 @@ class Results {
     this.content.append(content);
 
     const container = createAndAppend('container py-5', content);
+    this.timer = new Timer(container);
+    this.timer.initTimer(50);
+
     const row = createAndAppend('row row-cols-1 row-cols-lg-12 justify-content-between g-3', container);
     let col = createAndAppend('col col-lg-6 order-2 order-lg-1 backgrounded', row);
     this.resultParent = createAndAppend('row justify-content-between p-3', col);
@@ -23,8 +26,9 @@ class Results {
     col = createAndAppend('col col-lg-6 order-1 order-lg-2 gx-lg-5', row);
     this.scoreParent = createAndAppend('row py-3 backgrounded', col);
     lobby.players.sort((a, b) => a.score > b.score);
-    lobby.players.forEach(player => {
-        this.addResultScore(player)
+    lobby.players.forEach((player, index)  => {
+        const meme = lobby.round.memes.find(m => m.playerId === player.id);
+        this.addResultScore(player, meme, index != 0)
     })
   }
 
@@ -47,12 +51,27 @@ class Results {
     canvas.updateImage(meme.img, afterLoad)
   }
 
-  addResultScore(player){
-    let col = createAndAppend('col col-auto', this.scoreParent);
+  addResultScore(player, meme, addSplitter){
+    if(addSplitter) createAndAppend('w-100 solid', this.scoreParent, 'hr');
+    let col = createAndAppend('col', this.scoreParent);
     this.addAvatar(col, player.avatarId, player.name);
 
-    col = createAndAppend('col d-flex justify-content-end', this.scoreParent);
+    col = createAndAppend('col', this.scoreParent);
     const table = createAndAppend('table table-borderless', col, 'table');
+    this.addTableRow(table, 'Всего очков:', player.score);
+    this.addTableRow(table, 'Очки за мем:', meme.plusMeme);
+    if(meme.plusBuddy) this.addTableRow(table, 'Разделил мембади:', meme.plusBuddy);
+    if(meme.plusHasBuddy) this.addTableRow(table, 'Получен мембади:', meme.plusHasBuddy);
+  }
+
+  addTableRow(table, title, value){
+    const row = table.insertRow(-1);
+    let cell = row.insertCell(0);
+    cell.classList.add("col-2")
+    cell.innerText = title;
+    cell = row.insertCell(1);
+    cell.classList.add("col-2")
+    cell.innerText = value > 0 ? '+' + value : value;
   }
 
   addAvatar(parent, avatarId, name) {
