@@ -7,17 +7,17 @@ $(function () {
         window.fakeLobby = {
            id: 'fake',
            config: {},
-           round: [{
+           round: {
                memes: [data]
-           }]
+           }
          }
         window.creation.updateState(window.fakeLobby);
       });
 
 });
 
-function createAndAppend(cl, parent) {
-    const elem = createElement(cl);
+function createAndAppend(cl, parent, innerText) {
+    const elem = createElement(cl, 'div', innerText);
     parent.append(elem);
     return elem;
 }

@@ -10,13 +10,17 @@ class Creation {
         this.content.append(content);
 
         this.container = createAndAppend('container py-5', content);
-        this.timer = new Timer(this.container, () => {window.ws.submitMeme(this.lobby.id, this.caps.map(v => v.val()))});
+        this.timer = new Timer(this.container, this.onTimerFire);
         if (this.lobby) {
-            this.timer.initTimer(this.lobby.config.timer || 0);
+            this.timer.initTimer(this.lobby.config.timer || 1);
         }
 
         const row = createAndAppend('row row-cols-1 row-cols-lg-2 justify-content-around gy-3', this.container);
         this.initContent(row);
+    }
+
+    onTimerFire() {
+        window.ws.submitMeme(this.lobby.id, this.caps.map(v => v.val()))
     }
 
     updateState(lobby, id) {
@@ -37,27 +41,38 @@ class Creation {
             this.caps = [];
             let textCount = memeCaps.length;
             while (textCount > 0) {
-                const text = createElement('text', 'textarea');
-                text.placeholder = 'Текст ' + (memeCaps.length - textCount + 1);
-                text.setAttribute('index', memeCaps.length - textCount);
-                col.append(text);
-                const cap = $(text);
-                this.caps.push(cap);
-                cap.bind('input propertychange', function() {
-                    cap.height(0);
-                    cap.height(cap[0].scrollHeight);
-                    this.canvas.restartCanvas();
-                    for (let cap of this.caps) {
-                        if (cap.val()) {
-                            this.canvas.draw(cap.val(), memeCaps[cap.attr('index')]);
-                        }
-                    }
-                }.bind(this));
+                this.createCapTextArea(col, textCount, memeCaps);
                 textCount--;
             }
             const ready = createElement('start-button', 'button', 'Готово')
             $(ready).click(this.onSubmit.bind(this));
             col.append(ready);
+        }
+    }
+
+    createCapTextArea(col, textCount, memeCaps){
+        const text = createElement('text', 'textarea');
+        text.placeholder = 'Текст ' + (memeCaps.length - textCount + 1);
+        text.setAttribute('index', memeCaps.length - textCount);
+        col.append(text);
+        const cap = $(text);
+        this.caps.push(cap);
+        cap.height(0);
+        cap.height(cap[0].scrollHeight);
+        cap.bind('input propertychange', function() {
+            cap.height(0);
+            cap.height(cap[0].scrollHeight);
+            const memeCaps = this.getMeme().caps;
+            this.canvas.restartCanvas();
+            for (let cap of this.caps) {
+                this.drawCap(cap, memeCaps);
+            }
+        }.bind(this));
+    }
+
+    drawCap(cap, memeCaps) {
+        if (cap.val()) {
+            this.canvas.draw(cap.val(), memeCaps[cap.attr('index')]);
         }
     }
 

@@ -10,15 +10,31 @@ class Canvas {
         let lines = 0;
         let strings = [];
         let fontSize;
-        const minFont = this.ctx.canvas.height / 10;
+        const maxFont = cap.maxFont || this.ctx.canvas.height / 10;
+        console.log(cap.maxFont);
         do {
             lines++;
-            fontSize = Math.min(minFont, cap.height / lines);
+            fontSize = Math.min(maxFont, cap.height / lines);
             this.ctx.font = fontSize + "px Arial";
             strings = text.split("\n");
             strings = strings.flatMap(v => this.splitByMaxWidth(v, cap.width));
         } while (lines < strings.length)
+        if (cap.angle) {
+            this.ctx.rotate(cap.angle * Math.PI / 180);
+        }
         this.fillText(fontSize, strings, cap.x, cap.y + fontSize);
+        if (cap.angle) {
+            this.ctx.rotate(-cap.angle * Math.PI / 180);
+        }
+    }
+
+    drawTestFields(cap) {
+        this.ctx.rotate(cap.angle * Math.PI / 180);
+        this.ctx.strokeStyle = 'white';
+        this.ctx.globalAlpha = 0.4;
+        this.ctx.fillRect(cap.x, cap.y, cap.width, cap.height);
+        this.ctx.globalAlpha = 1.0;
+        this.ctx.rotate(-cap.angle * Math.PI / 180);
     }
 
     restartCanvas() {
@@ -65,7 +81,6 @@ class Canvas {
                 afterLoad();
             }
         };
-        console.log(window.origin + "/" + src);
         this.img.src = window.origin + "/" + src;
     }
 }
