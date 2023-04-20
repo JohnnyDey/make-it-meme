@@ -16,8 +16,8 @@ $(function () {
 
 });
 
-function createAndAppend(cl, parent, innerText) {
-    const elem = createElement(cl, 'div', innerText);
+function createAndAppend(cl, parent, type) {
+    const elem = createElement(cl, type);
     parent.append(elem);
     return elem;
 }

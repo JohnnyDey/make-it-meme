@@ -28,6 +28,7 @@ class Canvas {
         if (cap.angle) {
             this.ctx.rotate(cap.angle * Math.PI / 180);
         }
+        this.ctx.textAlign = cap.center ? 'center' : 'start';
         this.fillText(fontSize, strings, cap.x, cap.y + fontSize);
         if (cap.angle) {
             this.ctx.rotate(-cap.angle * Math.PI / 180);
@@ -35,10 +36,11 @@ class Canvas {
     }
 
     drawTestFields(cap) {
+        const xRation = cap.center ? cap.width / 2 : 0;
         this.ctx.rotate(cap.angle * Math.PI / 180);
         this.ctx.strokeStyle = 'white';
         this.ctx.globalAlpha = 0.4;
-        this.ctx.fillRect(cap.x, cap.y, cap.width, cap.height);
+        this.ctx.fillRect(cap.x - xRation, cap.y, cap.width, cap.height);
         this.ctx.globalAlpha = 1.0;
         this.ctx.rotate(-cap.angle * Math.PI / 180);
     }

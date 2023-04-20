@@ -14,6 +14,7 @@ class CreationTest extends Creation {
         const width = this.createGroup(col, 'width', memeCaps[capIndex].width, capIndex);
         const angle = this.createGroup(col, 'angle', memeCaps[capIndex].angle, capIndex);
         const maxFont = this.createGroup(col, 'maxFont', memeCaps[capIndex].maxFont, capIndex);
+        const center = this.createGroupCheckbox(col, memeCaps[capIndex].center, 'center');
         const ready = createElement(null, 'button', 'Применить конфиг')
         $(ready).click(function() {
            this.lobby.round.memes[0].caps[capIndex].x = parseInt(x.value);
@@ -22,6 +23,8 @@ class CreationTest extends Creation {
            this.lobby.round.memes[0].caps[capIndex].width = parseInt(width.value);
            this.lobby.round.memes[0].caps[capIndex].angle = parseInt(angle.value);
            this.lobby.round.memes[0].caps[capIndex].maxFont = parseInt(maxFont.value);
+           console.log(center.checked);
+           this.lobby.round.memes[0].caps[capIndex].center = center.checked;
            const memeCaps = this.getMeme().caps;
            this.canvas.restartCanvas();
            for (let cap of this.caps) {
@@ -39,7 +42,8 @@ class CreationTest extends Creation {
          col.append(group);
 
          let append = createElement('input-group-prepend');
-         createAndAppend('input-group-text', append, textAttr);
+         const igt = createAndAppend('input-group-text', append);
+         igt.innerHTML = textAttr;
          group.append(append);
 
          let text = createElement('form-control', 'input');
@@ -49,6 +53,21 @@ class CreationTest extends Creation {
 
          group.append(text);
          return text;
+     }
+
+     createGroupCheckbox(col, value, id) {
+          const form = createAndAppend('form-check', col);
+
+          const checkbox = createAndAppend('form-check-input', form, 'input');
+          checkbox.checked = value;
+          checkbox.type= 'checkbox';
+          checkbox.id = id;
+
+          const label = createAndAppend('form-check-label', form, 'label');
+          label.innerHTML = id;
+          label.for = id;
+
+          return checkbox;
      }
 
      initContent(parent) {
