@@ -80,7 +80,7 @@ class Creation {
         this.timer.clearInterval();
         window.ws.submitMeme(this.lobby.id, this.caps.map(v => v.val()));
         $(this.container).empty();
-        const row = createAndAppend('row py-5', this.container);
+        const row = createAndAppend('row justify-content-center backgrounded py-5', this.container);
         row.innerText = 'Ты создал шедевр! Можешь отдохнуть, поку другие трудятся.';
     }
 

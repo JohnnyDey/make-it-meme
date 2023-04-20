@@ -2,6 +2,7 @@ package com.geymaster.memes.model;
 
 import com.geymaster.memes.messages.MemeDto;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,14 +15,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Meme implements Cloneable {
     private final List<String> lines;
     private final List<Cap> caps = new ArrayList<>();
-    private String img;
-    private final Map<Player, Integer> grades;
     private final List<Player> buddies;
+    private final Map<Player, Integer> grades;
+    private String img;
     private MemeStatus status;
     private Integer score = 0;
     private int plusMeme;
     private int plusBuddy;
     private int plusHasBuddy;
+
+    @Setter
+    private Player owner;
 
     public Meme() {
         lines = new ArrayList<>();

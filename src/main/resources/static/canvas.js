@@ -1,9 +1,16 @@
 class Canvas {
-     initCanvas(parent) {
+     initCanvas(parent, restore) {
         const canvas = createElement('image', 'canvas')
+        this.download = () => {
+            const anchor = document.createElement("a");
+            anchor.href = canvas.toDataURL("image/png");
+            anchor.download = "meme.png";
+            anchor.click();
+        };
         parent.append(canvas);
         this.canvas = $(canvas)[0];
         this.ctx = this.canvas.getContext("2d");
+        this.restore = restore;
     }
 
     draw(text, cap) {
@@ -11,7 +18,6 @@ class Canvas {
         let strings = [];
         let fontSize;
         const maxFont = cap.maxFont || this.ctx.canvas.height / 10;
-        console.log(cap.maxFont);
         do {
             lines++;
             fontSize = Math.min(maxFont, cap.height / lines);
@@ -40,7 +46,7 @@ class Canvas {
     restartCanvas() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.drawImage(this.img, 0, 0, this.canvas.width, this.canvas.height);
-        if(this.color) {
+        if (this.color) {
             this.ctx.fillStyle = this.color;
         }
     }
@@ -82,5 +88,23 @@ class Canvas {
             }
         };
         this.img.src = window.origin + "/" + src;
+    }
+
+    censor() {
+        if (this.consored) {
+            this.ctx.textAlign = "start";
+            this.restartCanvas();
+            this.restore();
+            this.consored = false;
+        } else {
+            this.ctx.textAlign = "center";
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.fillStyle = 'black';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.fillStyle = 'red';
+            this.ctx.font = this.canvas.height / 10 + "px Yanone-Regular";
+            this.ctx.fillText('Ну это бан!', this.canvas.width / 2, this.canvas.height / 2);
+            this.consored = true;
+        }
     }
 }

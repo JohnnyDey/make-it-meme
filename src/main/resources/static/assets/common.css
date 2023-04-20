@@ -15,19 +15,7 @@ h1
     color: rgb(255, 255, 255);
 }
 
-.button
-{
-    font-family: Yanone-Regular;
-    font-size: 20px;
-
-    padding: 5px;
-
-    color: rgb(0, 0, 0);
-    border: solid 3px rgb(0, 0, 0);
-    border-radius: 10px;
-    background-color: rgb(255, 255, 255);
-}
-.button:hover
+button:hover
 {
     cursor: pointer;
 
@@ -116,4 +104,22 @@ select
 {
     background-color: rgba(255, 255, 255, 0.25);
     border-radius: 25px;
+}
+.control-button-ban{
+    background-color: #d33c3c;
+}
+.control-button-standart{
+    background-color: white;
+}
+.control-button{
+    border: solid 3px black;
+    border-radius: 10px;
+    font-size: 40px;
+    color: #000000;
+    cursor: pointer;
+    user-select: none;
+}
+.control-button:hover{
+    box-shadow: 3px 3px 2px 1px rgba(0, 0, 0, 0.3);
+    opacity: 0.6;
 }

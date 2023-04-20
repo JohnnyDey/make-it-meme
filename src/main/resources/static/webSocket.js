@@ -13,10 +13,11 @@ class WebSocketWrapper {
                 window.creation.updateState(JSON.parse(resp.body).lobby, creds);
             });
             this.stompClient.subscribe('/user/' + creds + '/grade', function(resp) {
-                window.grade.initGradePage(JSON.parse(resp.body));
+                window.grade.initGradePage(JSON.parse(resp.body), creds);
             });
             this.stompClient.subscribe('/user/' + creds + '/results', function(resp) {
-                window.results.initResults(JSON.parse(resp.body).lobby);
+                const lobby = JSON.parse(resp.body).lobby;
+                window.results.initResults(lobby, lobby.leaderId == creds);
             });
         }
 
@@ -70,5 +71,9 @@ class WebSocketWrapper {
             'lobbyId': lobbyId,
             'name': playerId,
          }));
+    }
+
+    buddyMeme(lobbyId){
+         this.stompClient.send(`/app/game/${lobbyId}/buddy`);
     }
 }

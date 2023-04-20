@@ -4,8 +4,7 @@ class Results {
     this.content = $('body');
   }
 
-  initResults(lobby) {
-    console.log(lobby);
+  initResults(lobby, asLeader) {
     this.content.empty();
     const content = createElement('content');
     this.content.append(content);
@@ -20,7 +19,7 @@ class Results {
     lobby.round.memes.sort((a, b) => a.score > b.score);
     lobby.round.memes.forEach(meme => {
         const player = lobby.players.find(p => p.id === meme.playerId);
-        this.addResultMeme(player, meme)
+        this.addResultMeme(player, meme, asLeader)
     })
 
     col = createAndAppend('col col-lg-6 order-1 order-lg-2 gx-lg-5', row);
@@ -32,7 +31,7 @@ class Results {
     })
   }
 
-  addResultMeme(player, meme) {
+  addResultMeme(player, meme, asLeader) {
     let col = createAndAppend('col col-auto', this.resultParent);
     this.addAvatar(col, player.avatarId, player.name);
 
@@ -40,16 +39,34 @@ class Results {
     const scoreDiv = createAndAppend('col col-auto d-flex align-content-center flex-wrap', col);
     scoreDiv.innerHTML = meme.score;
 
-    col = createAndAppend('col col-12 d-flex justify-content-center py-3', this.resultParent);
+    col = createAndAppend('col col-12', this.resultParent);
     const canvas = new Canvas();
-    canvas.initCanvas(col);
     const afterLoad = function () {
         for (let i = 0; i < meme.caps.length; i++) {
             canvas.draw(meme.lines[i], meme.caps[i]);
         }
     };
-    canvas.updateImage(meme.img, afterLoad)
+    canvas.initCanvas(col, afterLoad);
+    canvas.updateImage(meme.img, afterLoad);
+    const row = createAndAppend('row justify-content-end', col);
+
+    if (asLeader) {
+        const ban = this.createControlButton('control-button-ban', 'disabled_visible');
+        row.append(ban);
+        $(ban).click(canvas.censor.bind(canvas));
+    }
+
+    const download = this.createControlButton('control-button-standart', 'download');
+    row.append(download);
+    $(download).click(canvas.download);
   }
+
+   createControlButton(subClass, icon) {
+      const col = createElement('col col-2');
+      const span = createAndAppend('material-icons control-button ' + subClass, col, 'span');
+      span.innerHTML = icon;
+      return col;
+   }
 
   addResultScore(player, meme, addSplitter){
     if(addSplitter) createAndAppend('w-100 solid', this.scoreParent, 'hr');

@@ -21,12 +21,14 @@ public class Round {
         status = RoundStatus.NEW;
         players.forEach(p -> {
             Meme memeClone = meme.clone();
+            memeClone.setOwner(p);
             memes.put(p, memeClone);
         });
     }
 
     public void init(Player player, Meme meme) {
         status = RoundStatus.NEW;
+        meme.setOwner(player);
         memes.put(player, meme.clone());
     }
 
