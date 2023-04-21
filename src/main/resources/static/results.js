@@ -6,6 +6,7 @@ class Results {
 
   initResults(lobby, asLeader) {
     this.content.empty();
+    window.grade.buddied = false;
     const content = createElement('content');
     this.content.append(content);
 
@@ -51,22 +52,10 @@ class Results {
     const row = createAndAppend('row justify-content-end', col);
 
     if (asLeader) {
-        const ban = this.createControlButton('control-button-ban', 'disabled_visible');
-        row.append(ban);
-        $(ban).click(canvas.censor.bind(canvas));
+        createBanButton(row, canvas);
     }
-
-    const download = this.createControlButton('control-button-standart', 'download');
-    row.append(download);
-    $(download).click(canvas.download);
+    createDownloadButton(row, canvas);
   }
-
-   createControlButton(subClass, icon) {
-      const col = createElement('col col-2');
-      const span = createAndAppend('material-icons control-button ' + subClass, col, 'span');
-      span.innerHTML = icon;
-      return col;
-   }
 
   addResultScore(player, meme, addSplitter){
     if(addSplitter) createAndAppend('w-100 solid', this.scoreParent, 'hr');

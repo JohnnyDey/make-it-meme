@@ -40,3 +40,28 @@ function createElement(cl, type, innerText) {
   }
   return elem;
 }
+
+function addTooltip(object, title) {
+    object.setAttribute('title', title);
+}
+
+function createDownloadButton(parent, canvas) {
+    const download = createControlButton('control-button-standart', 'download');
+    parent.append(download);
+    addTooltip(download, 'Скачать мем.');
+    $(download).click(canvas.download);
+}
+
+function createBanButton(parent, canvas) {
+    const ban = createControlButton('control-button-ban', 'disabled_visible');
+    parent.append(ban);
+    addTooltip(ban, 'Скрыть мем пользователя.\nВ начале следующего раунда игрки, чьи мемы были скрыты, будут выгнаны из игры.');
+    $(ban).click(canvas.censor.bind(canvas));
+}
+
+function createControlButton(subClass, icon) {
+    const col = createElement('col col-2');
+    const span = createAndAppend('material-icons control-button ' + subClass, col, 'span');
+    span.innerHTML = icon;
+    return col;
+}

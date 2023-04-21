@@ -25,6 +25,7 @@ public class GameController {
     @MessageMapping("/game/{lobbyId}/start")
     public void start(LobbyRequest request, Principal principal, @DestinationVariable String lobbyId) {
         Lobby lobby = lobbyStorage.getLobby(lobbyId);
+        lobby.checkLeader(principal);
         lobby.runInLock(() -> {
             lobby.init(request.getLobby().getConfig());
             scheduler.startCreation(lobby);

@@ -77,7 +77,7 @@ public class Meme implements Cloneable {
 
     private void calculateBuddyScore(Player player, Round round) {
         round.getMemes().values().stream().filter(m -> m.getBuddies().contains(player)).findFirst()
-                .ifPresent((m) -> this.plusBuddy = m.getScore() / 2);
+                .ifPresent((m) -> this.plusBuddy = m.getPlusMeme() / 2);
     }
 
     private void calculateHasBuddy() {

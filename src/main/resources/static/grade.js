@@ -22,8 +22,22 @@ class Grade {
         const img = createAndAppend(null, col, 'img');
         img.src = 'assets/memebuddy.png';
         img.height = 75;
+        if (window.grade.buddied) {
+            img.classList.add('inactive');
+        }
+        addTooltip(img, 'Вы можете получить полвину очков за этотм мем.\nБудьте осторожны, если мем получит много дизлайков, вы получите штраф.\nМожно использовать только раз в раунд.');
+        if (this.meme.ownerId === this.creds) {
+            img.classList.add('inactive');
+            this.buddied = true
+        } else {
+            this.buddied = false;
+        }
         $(img).click(function() {
-            window.ws.buddyMeme(meme.lobbyId);
+            if(!window.grade.buddied) {
+                window.grade.buddied = true;
+                img.classList.add('inactive');
+                window.ws.buddyMeme(meme.lobbyId);
+            }
         });
 
         col = createAndAppend('col col-8 d-flex', row);
@@ -35,17 +49,13 @@ class Grade {
         this.canvas.initCanvas(col, afterLoad);
 
         col = createAndAppend('col col-1 d-flex align-content-end flex-wrap', row);
-        let innerRow = createAndAppend('row row-cols-1', col);
+        let innerRow = createAndAppend('row-cols-1', col);
 
         if (meme.asLeader) {
-            const ban = this.createControlButton('control-button-ban', 'disabled_visible');
-            innerRow.append(ban);
-            $(ban).click(this.canvas.censor.bind(this.canvas));
+            createBanButton(innerRow, this.canvas);
         }
 
-        const download = this.createControlButton('control-button-standart', 'download');
-        innerRow.append(download);
-        $(download).click(this.canvas.download);
+        createDownloadButton(innerRow, this.canvas);
 
         col = createAndAppend('col d-flex justify-content-around', row);
         row = createAndAppend('row row-cols-3 gx-5', col);
@@ -55,13 +65,6 @@ class Grade {
         row.append(this.createGradeButton('mda', 0));
         row.append(this.createGradeButton('dislike', -1));
         this.updateCanvas(afterLoad);
-     }
-
-     createControlButton(subClass, icon) {
-        const col = createElement('col');
-        const span = createAndAppend('material-icons control-button ' + subClass, col, 'span');
-        span.innerHTML = icon;
-        return col;
      }
 
      createGradeButton(src, score) {
@@ -88,6 +91,8 @@ class Grade {
         if (this.meme.ownerId === this.creds) {
             this.graded = true;
             colJquery.addClass('inactive');
+        } else {
+            this.graded = false;
         }
         return col
      }
