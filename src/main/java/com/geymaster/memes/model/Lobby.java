@@ -1,7 +1,10 @@
 package com.geymaster.memes.model;
 
 import com.geymaster.memes.messages.LobbyDto;
+import com.geymaster.memes.model.Round.RoundBuilder;
 import com.geymaster.memes.storage.MemeStorage;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,16 +23,17 @@ public class Lobby {
     private final List<Player> players = new ArrayList<>();
     private final List<Round> rounds = new ArrayList<>();
     private Config config;
-    @Setter
-    private ScheduledFuture<?> future;
+    private final boolean twitchRequired;
     private final ReentrantLock lock = new ReentrantLock();
+    @Setter private ScheduledFuture<?> future;
 
-    public Lobby(String id) {
+    public Lobby(String id, boolean twitchRequired) {
         this.id = id;
+        this.twitchRequired = twitchRequired;
     }
 
     public Round getLastRound() {
-        return getRound().orElse(new Round());
+        return getRound().orElse(Round.builder().build());
     }
 
     public boolean isLastRoundExist() {
@@ -49,7 +53,8 @@ public class Lobby {
     }
 
     public Optional<Meme> getMemeToGrade() {
-        return getLastRound().getMemes().values().stream().filter(meme -> !meme.isGraded())
+        return getLastRound().getMemes().values().stream()
+                .filter(meme -> !meme.isGraded())
                 .findFirst();
     }
 
@@ -59,14 +64,25 @@ public class Lobby {
 
     public void init(Config config) {
         this.config = config;
-        for (int i = 0; i < config.getRoundCount(); i ++) {
-            Round round = new Round();
+        for (int i = 0; i < config.getRoundCount(); i++) {
+            RoundBuilder round = Round.builder();
+            Map<Player, Meme> memes = new HashMap<>();
             if (config.isOneMeme()) {
-                round.init(players, MemeStorage.getRandomMeme(ALL));
+                Meme meme = MemeStorage.getRandomMeme(ALL).clone();
+                players.forEach(
+                        p -> {
+                            meme.setOwner(p);
+                            memes.put(p, meme);
+                        });
             } else {
-                players.forEach((p) -> round.init(p, MemeStorage.getRandomMeme(ALL)));
+                players.forEach((p) -> {
+                    Meme meme = MemeStorage.getRandomMeme(ALL).clone();
+                    meme.setOwner(p);
+                    memes.put(p, meme);
+                });
             }
-            rounds.add(round);
+            round.memes(memes);
+            rounds.add(round.build());
         }
     }
 
@@ -78,16 +94,16 @@ public class Lobby {
         return getPlayerByIdSafe(id).orElseThrow();
     }
 
-    public boolean hasPlayer(String id){
+    public boolean hasPlayer(String id) {
         return getPlayerByIdSafe(id).isPresent();
     }
 
-    private Optional<Player> getPlayerByIdSafe(String id){
+    private Optional<Player> getPlayerByIdSafe(String id) {
         return players.stream().filter(player -> player.getId().equals(id)).findFirst();
     }
 
     public void checkLeader(Principal principal) {
-        if (!players.get(0).getId().equals(principal.getName())){
+        if (!players.get(0).getId().equals(principal.getName())) {
             throw new IllegalArgumentException("Запрос сделан не лидером");
         }
     }

@@ -28,5 +28,4 @@ public class MemeRequest {
         this.ownerId = meme.getOwner().getId();
         this.asLeader = asLeader;
     }
-
 }

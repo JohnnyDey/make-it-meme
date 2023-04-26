@@ -12,6 +12,8 @@ public class LobbyRequest {
     private LobbyDto lobby;
     private String name;
     private String avatarId;
+    private boolean twitchRequired;
+    private String twitchToken;
 
     public LobbyRequest(LobbyDto lobby) {
         this.lobby = lobby;

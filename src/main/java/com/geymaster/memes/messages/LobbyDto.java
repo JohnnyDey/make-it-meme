@@ -11,6 +11,7 @@ import java.util.Arrays;
 @Setter
 @Getter
 @NoArgsConstructor
+
 public class LobbyDto {
     private String id;
     private String leaderId;
@@ -23,6 +24,9 @@ public class LobbyDto {
         this.players = players;
         this.round = round;
         this.config = config;
-        Arrays.stream(players).filter(Player::isLeader).findFirst().ifPresent(p -> leaderId = p.getId());
+        Arrays.stream(players)
+                .filter(Player::isLeader)
+                .findFirst()
+                .ifPresent(p -> leaderId = p.getId());
     }
 }

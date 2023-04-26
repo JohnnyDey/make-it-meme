@@ -15,15 +15,15 @@ public class MemeStorage {
         MemeCategory category = getRandomCategory(categories);
         int memeNumber = getRandomMeme(category);
         String pathString = String.format("static/memes/meme%s/config.json", memeNumber);
-        try (Reader reader = new InputStreamReader(new ClassPathResource(pathString).getInputStream())) {
+        try (Reader reader =
+                new InputStreamReader(new ClassPathResource(pathString).getInputStream())) {
             return new Gson().fromJson(reader, Meme.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
-    private static MemeCategory getRandomCategory(MemeCategory... categories){
+    private static MemeCategory getRandomCategory(MemeCategory... categories) {
         if (categories.length > 1) {
             int i = ThreadLocalRandom.current().nextInt(0, categories.length);
             return categories[i];
@@ -31,7 +31,7 @@ public class MemeStorage {
         return categories[0];
     }
 
-    private static int getRandomMeme(MemeCategory categorie){
+    private static int getRandomMeme(MemeCategory categorie) {
         return ThreadLocalRandom.current().nextInt(categorie.start, categorie.end);
     }
 
@@ -41,10 +41,10 @@ public class MemeStorage {
 
         final int start;
         final int end;
-        MemeCategory (int start, int end){
+
+        MemeCategory(int start, int end) {
             this.start = start;
             this.end = end;
         }
     }
-
 }

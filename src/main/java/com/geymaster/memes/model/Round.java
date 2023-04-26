@@ -2,6 +2,8 @@ package com.geymaster.memes.model;
 
 import com.geymaster.memes.messages.MemeDto;
 import com.geymaster.memes.messages.RoundDto;
+import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -9,27 +11,15 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
+@Builder
 public class Round {
-    private final Map<Player, Meme> memes = new HashMap<>();
-    private RoundStatus status;
+    @Default
+    private Map<Player, Meme> memes = new HashMap<>();
+    @Default
+    private RoundStatus status = RoundStatus.NEW;
 
     public Player getPlayerMeme(String id) {
         return memes.keySet().stream().filter(p -> p.getName().equals(id)).findFirst().orElse(null);
-    }
-
-    public void init(List<Player> players, Meme meme) {
-        status = RoundStatus.NEW;
-        players.forEach(p -> {
-            Meme memeClone = meme.clone();
-            memeClone.setOwner(p);
-            memes.put(p, memeClone);
-        });
-    }
-
-    public void init(Player player, Meme meme) {
-        status = RoundStatus.NEW;
-        meme.setOwner(player);
-        memes.put(player, meme.clone());
     }
 
     public void created() {
@@ -46,11 +36,15 @@ public class Round {
 
     public RoundDto toDto() {
         RoundDto roundDto = new RoundDto();
-        MemeDto[] memeDtos = memes.entrySet().stream()
-                .map((e) -> e.getValue().toDto(e.getKey().getId())).toList().toArray(new MemeDto[0]);
+        MemeDto[] memeDtos =
+                memes.entrySet().stream()
+                        .map((e) -> e.getValue().toDto(e.getKey().getId()))
+                        .toList()
+                        .toArray(new MemeDto[0]);
         roundDto.setMemes(memeDtos);
         return roundDto;
     }
+
     enum RoundStatus {
         NEW,
         CREATED,

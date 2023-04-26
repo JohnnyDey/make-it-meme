@@ -22,7 +22,8 @@ public class RoundScheduler {
     @Autowired private SimpMessagingTemplate template;
 
     private void scheduleGrade(Lobby lobby, int time) {
-        ScheduledFuture<?> future = scheduler.schedule(() -> startGrade(lobby), Instant.now().plusSeconds(time + 1));
+        ScheduledFuture<?> future =
+                scheduler.schedule(() -> startGrade(lobby), Instant.now().plusSeconds(time + 1));
         lobby.setFuture(future);
     }
 
@@ -34,35 +35,53 @@ public class RoundScheduler {
         if (!lobby.isAllGradesSubmitted()) {
             Meme memeToGrade = lobby.getMemeToGradeUnsafe();
             memeToGrade.grading();
-            lobby.getPlayers().forEach(p -> {
-                template.convertAndSendToUser(p.getId(), "/grade",
-                        new MemeRequest(memeToGrade, lobby.getId(), p.isLeader()));
-            });
+            lobby.getPlayers()
+                    .forEach(
+                            p -> {
+                                template.convertAndSendToUser(
+                                        p.getId(),
+                                        "/grade",
+                                        new MemeRequest(memeToGrade, lobby.getId(), p.isLeader()));
+                            });
             scheduleGrade(lobby, GRADE_TIME);
         } else {
             startResults(lobby);
         }
     }
 
-    private void startResults(Lobby lobby){
+    private void startResults(Lobby lobby) {
         Round lastRound = lobby.getLastRound();
-        lastRound.getMemes().forEach((player, meme) -> {
-            meme.calculatePreliminaryScore();
-        });
-        lastRound.getMemes().forEach((player, meme) -> {
-            meme.calculateTotalScore(player, lastRound);
-            player.addScore(meme);
-        });
-        lobby.getPlayers().forEach(p -> template.convertAndSendToUser(p.getId(), "/results",
-                new LobbyRequest(lobby.toDto())));
+        lastRound
+                .getMemes()
+                .forEach(
+                        (player, meme) -> {
+                            meme.calculatePreliminaryScore();
+                        });
+        lastRound
+                .getMemes()
+                .forEach(
+                        (player, meme) -> {
+                            meme.calculateTotalScore(player, lastRound);
+                            player.addScore(meme);
+                        });
+        lobby.getPlayers()
+                .forEach(
+                        p ->
+                                template.convertAndSendToUser(
+                                        p.getId(), "/results", new LobbyRequest(lobby.toDto())));
         lastRound.graded();
         scheduler.schedule(() -> startCreation(lobby), Instant.now().plusSeconds(RESULTS_TIME));
     }
 
-    public void startCreation(Lobby lobby){
+    public void startCreation(Lobby lobby) {
         if (lobby.isLastRoundExist()) {
-            lobby.getPlayers().forEach(p -> template.convertAndSendToUser(p.getId(), "/creation",
-                    new LobbyRequest(lobby.toDto())));
+            lobby.getPlayers()
+                    .forEach(
+                            p ->
+                                    template.convertAndSendToUser(
+                                            p.getId(),
+                                            "/creation",
+                                            new LobbyRequest(lobby.toDto())));
             scheduleGrade(lobby, lobby.getConfig().getTimer());
         }
     }

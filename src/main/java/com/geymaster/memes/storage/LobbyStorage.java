@@ -11,9 +11,9 @@ import java.util.WeakHashMap;
 public class LobbyStorage {
     private final Map<String, Lobby> lobbies = new WeakHashMap<>();
 
-    public Lobby create() {
+    public Lobby create(boolean twitchRequired) {
         String id = generateId();
-        Lobby lobby = new Lobby(id);
+        Lobby lobby = new Lobby(id, twitchRequired);
         lobbies.put(id, lobby);
         return lobby;
     }

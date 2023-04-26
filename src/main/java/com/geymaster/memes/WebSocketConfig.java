@@ -1,6 +1,5 @@
 package com.geymaster.memes;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -21,14 +20,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/mim-websocket").setHandshakeHandler(new CustomHandshakeHandler()).withSockJS();
+        registry.addEndpoint("/mim-websocket")
+                .setHandshakeHandler(new CustomHandshakeHandler())
+                .withSockJS();
     }
 
     @Bean
-    public ThreadPoolTaskScheduler getScheduler(){
+    public ThreadPoolTaskScheduler getScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(10);
         return scheduler;
     }
-
 }

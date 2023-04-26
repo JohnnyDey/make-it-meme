@@ -24,8 +24,7 @@ public class Meme implements Cloneable {
     private int plusBuddy;
     private int plusHasBuddy;
 
-    @Setter
-    private Player owner;
+    @Setter private Player owner;
 
     public Meme() {
         lines = new ArrayList<>();
@@ -34,7 +33,7 @@ public class Meme implements Cloneable {
         status = MemeStatus.NEW;
     }
 
-    public MemeDto toDto(String playerId){
+    public MemeDto toDto(String playerId) {
         MemeDto memeDto = new MemeDto();
         memeDto.setCaps(caps.toArray(new Cap[0]));
         memeDto.setImg(img);
@@ -47,7 +46,7 @@ public class Meme implements Cloneable {
         return memeDto;
     }
 
-    public void submit(List<String> lines){
+    public void submit(List<String> lines) {
         this.lines.addAll(lines);
         status = MemeStatus.SUBMITTED;
     }
@@ -56,7 +55,7 @@ public class Meme implements Cloneable {
         grades.put(player, grade);
     }
 
-    public void buddy(Player player){
+    public void buddy(Player player) {
         buddies.add(player);
     }
 
@@ -76,7 +75,9 @@ public class Meme implements Cloneable {
     }
 
     private void calculateBuddyScore(Player player, Round round) {
-        round.getMemes().values().stream().filter(m -> m.getBuddies().contains(player)).findFirst()
+        round.getMemes().values().stream()
+                .filter(m -> m.getBuddies().contains(player))
+                .findFirst()
                 .ifPresent((m) -> this.plusBuddy = m.getPlusMeme() / 2);
     }
 
@@ -113,7 +114,7 @@ public class Meme implements Cloneable {
         }
     }
 
-    enum MemeStatus{
+    enum MemeStatus {
         NEW,
         SUBMITTED,
         GRADING,
