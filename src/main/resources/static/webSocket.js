@@ -6,8 +6,13 @@ class WebSocketWrapper {
         const onConnect = function(frame) {
             const creds = frame.headers['user-name'];
             this.stompClient.subscribe('/user/' + creds + '/lobby', function(resp) {
-                const lobby = JSON.parse(resp.body).lobby;
-                window.lobby.updateState(lobby, lobby.leaderId == creds);
+                const body = JSON.parse(resp.body);
+                if (body.errorMsg) {
+                    window.main.initMainPage(body.errorMsg);
+                } else {
+                    const lobby = body.lobby;
+                    window.lobby.updateState(lobby, lobby.leaderId == creds);
+                }
             });
             this.stompClient.subscribe('/user/' + creds + '/creation', function(resp) {
                 window.creation.updateState(JSON.parse(resp.body).lobby, creds);
@@ -24,10 +29,12 @@ class WebSocketWrapper {
         this.stompClient.connect({}, onConnect.bind(this));
     }
 
-    createLobby(creatorName, avaId) {
+    createLobby(creatorName, avaId, isTwitchRequired) {
         this.stompClient.send('/app/game/lobby/create', {}, JSON.stringify({
             'name': creatorName,
-            'avatarId': avaId
+            'avatarId': avaId,
+            'twitchRequired': !!localStorage.getItem('twitch_access_token'),
+            'twitchToken': localStorage.getItem('twitch_access_token')
         }));
     }
 
@@ -35,7 +42,8 @@ class WebSocketWrapper {
         this.stompClient.send('/app/game/lobby/join', {}, JSON.stringify({
             'lobbyId': lobbyId,
             'name': creatorName,
-            'avatarId': avaId
+            'avatarId': avaId,
+            'twitchToken': localStorage.getItem('twitch_access_token')
         }));
     }
 

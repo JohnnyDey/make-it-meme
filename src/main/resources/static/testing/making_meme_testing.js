@@ -23,7 +23,6 @@ class CreationTest extends Creation {
            this.lobby.round.memes[0].caps[capIndex].width = parseInt(width.value);
            this.lobby.round.memes[0].caps[capIndex].angle = parseInt(angle.value);
            this.lobby.round.memes[0].caps[capIndex].maxFont = parseInt(maxFont.value);
-           console.log(center.checked);
            this.lobby.round.memes[0].caps[capIndex].center = center.checked;
            const memeCaps = this.getMeme().caps;
            this.canvas.restartCanvas();

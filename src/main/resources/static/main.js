@@ -6,11 +6,18 @@ class Main {
     this.avaId = Math.floor(Math.random() * this.maxId);
   }
 
-  initMainPage() {
+  initMainPage(errorMsg) {
     this.content.empty();
     const content = createElement('content');
     this.content.append(content);
 
+    this.createNavbar(content);
+
+    if (errorMsg) {
+        const alert = createAndAppend('alert alert-danger alert-dismissible fade show', content);
+        alert.setAttribute('role', 'alert');
+        alert.append(createElement(null, 'div', errorMsg));
+    }
     const container = createAndAppend('container py-5', content);
     let row = createAndAppend('row row-cols-1 justify-content-center gy-5', container, 'form');
     let col = createAndAppend('col d-flex justify-content-around', row);
@@ -48,6 +55,27 @@ class Main {
     col.append(nameInput);
     this.nameInput = $(nameInput);
 
+    const accessToken = localStorage.getItem('twitch_access_token');
+    if (accessToken) {
+        fetch('https://api.twitch.tv/helix/users', {
+          headers: {
+            'Client-ID': 'cnev6y1p1y3yyafvt9n3paa3qd3dfl',
+            'Authorization': 'Bearer ' + accessToken
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            const userName = data.data[0].display_name;
+            nameInput.value = userName;
+            nameInput.disabled = true;
+          })
+          .catch(error => {
+            console.log('Произошла ошибка:', error);
+          });
+
+    }
+
+
     col = createAndAppend('col', row);
 
     row = createAndAppend('row row-cols-2 justify-content-center', col);
@@ -72,13 +100,49 @@ class Main {
     this.action.click(function(){
       if(this.nameInput.val()) {
         if(this.isCodeEmpty()) {
-          window.ws.createLobby(this.nameInput.val(), this.avaId);
+          window.ws.createLobby(this.nameInput.val(), this.avaId, true);
         } else {
           window.ws.joinLobby(this.nameInput.val(), this.codeInput.val(), this.avaId);
         }
         window.lobby.initLobbyPage();
       }
     }.bind(this));
+  }
+
+  createNavbar(parent) {
+      const nav = createAndAppend('navbar bg-info', parent, 'nav');
+      const container = createAndAppend('container-sm', nav);
+
+      container.append(this.createBrand('assets/twitch-icon.svg'));
+      this.actualNavbar();
+  }
+
+  actualNavbar() {
+    const twitch_access_token = localStorage.getItem('twitch_access_token');
+    const img = this.twitch.children[0];
+    const twitchLabel =  twitch_access_token ? 'Выйти' : 'Войти';
+    this.twitch.innerHTML = ' ' + twitchLabel;
+    this.twitch.prepend(img);
+    const action = twitch_access_token ? () => {
+        localStorage.removeItem('twitch_access_token');
+        this.actualNavbar();
+        this.nameInput.prop('disabled', false);
+    } : () => {
+        const location = window.location.href + 'auth';
+        const twitchAuthUrl = 'https://id.twitch.tv/oauth2/authorize?client_id=cnev6y1p1y3yyafvt9n3paa3qd3dfl&redirect_uri=' + location + '&response_type=token';
+        window.open(twitchAuthUrl, '_self');
+    };
+    $(this.twitch).click(action);
+  }
+
+  createBrand(src) {
+    const a = createElement('navbar-brand', 'a');
+    const img = createAndAppend(null, a, 'img');
+    img.width = 20;
+    img.height = 20;
+    img.src = src;
+    this.twitch = a;
+    return a;
   }
 
   isCodeEmpty() {

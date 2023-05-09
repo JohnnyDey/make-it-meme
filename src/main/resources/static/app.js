@@ -12,9 +12,44 @@ function initWrappers() {
   window.results = new Results();
 }
 
+function checkAuthParams() {
+  if (document.URL.includes('#')) {
+    let url = document.URL.replaceAll('#', '?');
+    location.replace(url);
+  } else if (document.URL.includes('?')) {
+    const access_token = new URLSearchParams(window.location.search).get('access_token');
+    localStorage.setItem('twitch_access_token', access_token);
+  }
+}
+
+function hideParams() {
+    if (document.URL.includes('?')) {
+        const baseUrl = document.URL.split('?')[0];
+        window.history.pushState({}, document.title, window.location.origin);
+    }
+}
+
+async function validateTokens() {
+    const token = localStorage.getItem('twitch_access_token');
+    if (token) {
+        const response = await fetch('https://id.twitch.tv/oauth2/validate', {
+            headers: {
+              'Authorization': `OAuth ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            localStorage.removeItem('twitch_access_token');
+        }
+    }
+}
+
 $(function () {
+    checkAuthParams();
+    hideParams();
     initWrappers();
     window.main.initMainPage();
+    $.when(validateTokens()).then(() => {window.main.actualNavbar()})
 });
 
 function createAndAppend(cl, parent, type) {

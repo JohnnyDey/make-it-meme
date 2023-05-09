@@ -5,13 +5,14 @@ import com.geymaster.memes.messages.LobbyRequest;
 import com.geymaster.memes.model.Lobby;
 import com.geymaster.memes.model.Player;
 import com.geymaster.memes.storage.LobbyStorage;
+import java.security.Principal;
+import java.util.function.Consumer;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-
-import java.security.Principal;
-import java.util.function.Consumer;
 
 @Controller
 public class LobbyController {
@@ -23,14 +24,19 @@ public class LobbyController {
     @MessageMapping("/game/lobby/create")
     public void create(LobbyRequest request, Principal principal) {
         Lobby lobby = lobbyStorage.create(request.isTwitchRequired());
-        Player player =
+        Player.PlayerBuilder player =
                 Player.builder()
                         .id(principal.getName())
                         .name(request.getName())
                         .avatarId(request.getAvatarId())
-                        .leader(true)
-                        .build();
-        lobby.getPlayers().add(player);
+                        .leader(true);
+        if (request.isTwitchRequired()) {
+            Pair<String, String> idAndName = TwitchAuth.getUserId(request.getTwitchToken());
+            player.name(idAndName.getRight()).twitchId(idAndName.getLeft());
+
+        }
+
+        lobby.getPlayers().add(player.build());
         template.convertAndSendToUser(
                 principal.getName(), "/lobby", new LobbyRequest(lobby.toDto()));
     }
@@ -38,23 +44,26 @@ public class LobbyController {
     @MessageMapping("/game/lobby/join")
     public void join(LobbyRequest request, Principal principal) {
         Lobby lobby = lobbyStorage.getLobby(request.getLobbyId());
-        if (lobby.isTwitchRequired() && request.getTwitchToken() == null) {
-            return;
+        Player.PlayerBuilder player =
+                Player.builder()
+                        .id(principal.getName())
+                        .name(request.getName())
+                        .avatarId(request.getAvatarId());
+        if (lobby.isTwitchRequired()) {
+            if (request.getTwitchToken() == null) {
+                throw new IllegalArgumentException("Это лобби требует авторизации через Twitch.");
+            } else {
+                Pair<String, String> idAndName = TwitchAuth.getUserId(request.getTwitchToken());
+                player.name(idAndName.getRight()).twitchId(idAndName.getLeft());
+            }
         }
-        String userId = TwitchAuth.getUserId(request.getTwitchToken());
+
         lobby.runInLock(
                 () -> {
                     if (lobby.hasPlayer(principal.getName())) {
-                        throw new IllegalArgumentException("Player Already exists");
+                        throw new IllegalArgumentException("Вы уже подключены.");
                     }
-                    Player player =
-                            Player.builder()
-                                    .id(principal.getName())
-                                    .name(request.getName())
-                                    .avatarId(request.getAvatarId())
-                                    .twitchId(userId)
-                                    .build();
-                    lobby.getPlayers().add(player);
+                    lobby.getPlayers().add(player.build());
                     notifyPlayers(lobby);
                 });
     }
@@ -68,6 +77,8 @@ public class LobbyController {
                     Player player = lobby.getPlayerById(request.getName());
                     lobby.getPlayers().remove(player);
                     notifyPlayers(lobby);
+                    template.convertAndSendToUser(
+                            player.getId(), "/lobby", new LobbyRequest("Вы были исключены лидером лобби."));
                 });
     }
 
@@ -77,5 +88,11 @@ public class LobbyController {
                         template.convertAndSendToUser(
                                 p.getId(), "/lobby", new LobbyRequest(lobby.toDto()));
         lobby.getPlayers().forEach(notify);
+    }
+
+    @MessageExceptionHandler
+    public void test(Exception e, Principal principal) {
+        template.convertAndSendToUser(
+                principal.getName(), "/lobby", new LobbyRequest(e.getMessage()));
     }
 }

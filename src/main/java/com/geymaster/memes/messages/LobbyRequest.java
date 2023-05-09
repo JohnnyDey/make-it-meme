@@ -14,8 +14,13 @@ public class LobbyRequest {
     private String avatarId;
     private boolean twitchRequired;
     private String twitchToken;
+    private String errorMsg;
 
     public LobbyRequest(LobbyDto lobby) {
         this.lobby = lobby;
+    }
+
+    public LobbyRequest(String errorMsg) {
+        this.errorMsg = errorMsg;
     }
 }

@@ -42,7 +42,7 @@ class Lobby {
         parent.append(this.lobbyList);
 
         this.lobbyList.append(createElement(null, 'h1', 'Игроки'));
-        this.addPlayer('Лидер лобби');
+        this.addPlayer({name: 'Подключение к лобби...'});
     }
 
     createDropDown(options, id, label) {
@@ -85,6 +85,7 @@ class Lobby {
             row.append(startButton);
             this.startButton = $(startButton);
             this.startButton.click(function() {
+                this.ready = false;
                 window.ws.startGame(this.id,
                     $('#' + this.ROUND_DURATION_ID).val(),
                     $('#' + this.ROUND_COUNT_ID).val(),
@@ -100,7 +101,7 @@ class Lobby {
             }.bind(this));
         } else {
             col = createAndAppend('col py-2', row);
-            col.append(createElement(null, 'div', 'Подождите, пока лидел лобби запустит игру'));
+            col.append(createElement(null, 'div', 'Подождите, пока лидер лобби запустит игру'));
         }
     }
 
