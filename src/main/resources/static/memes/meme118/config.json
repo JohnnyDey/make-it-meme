@@ -1,17 +1,23 @@
 {
-  "img": "memes/meme118/meme.jpg",
-  "caps": [
-    {
-      "x": 457,
-      "y": 116,
-      "width": 338,
-      "height": 161
-    },
-    {
-      "x": 98,
-      "y": 836,
-      "width": 533,
-      "height": 208
-    }
-  ]
+    "img": "memes/meme118/meme.jpg",
+    "caps": [
+        {
+            "x": 600,
+            "y": 116,
+            "width": 338,
+            "height": 161,
+            "angle": null,
+            "maxFont": null,
+            "center": true
+        },
+        {
+            "x": 368,
+            "y": 836,
+            "width": 533,
+            "height": 208,
+            "angle": null,
+            "maxFont": null,
+            "center": true
+        }
+    ]
 }
