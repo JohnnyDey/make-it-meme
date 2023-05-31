@@ -6,6 +6,7 @@ class Grade {
     }
 
      initGradePage(meme, creds) {
+        this.canvas.consored = false;
         this.meme = meme;
         this.creds = creds;
         this.content.empty();
@@ -52,7 +53,7 @@ class Grade {
         let innerRow = createAndAppend('row-cols-1', col);
 
         if (meme.asLeader) {
-            createBanButton(innerRow, this.canvas);
+            createBanButton(innerRow, this.canvas, meme.ownerId);
         }
 
         createDownloadButton(innerRow, this.canvas);

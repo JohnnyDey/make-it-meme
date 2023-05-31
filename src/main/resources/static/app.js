@@ -10,6 +10,7 @@ function initWrappers() {
   window.creation = new Creation();
   window.grade = new Grade();
   window.results = new Results();
+  window.blacklist = [];
 }
 
 function checkAuthParams() {
@@ -87,11 +88,11 @@ function createDownloadButton(parent, canvas) {
     $(download).click(canvas.download);
 }
 
-function createBanButton(parent, canvas) {
+function createBanButton(parent, canvas, ownerId) {
     const ban = createControlButton('control-button-ban', 'disabled_visible');
     parent.append(ban);
     addTooltip(ban, 'Скрыть мем пользователя.\nВ начале следующего раунда игрки, чьи мемы были скрыты, будут выгнаны из игры.');
-    $(ban).click(canvas.censor.bind(canvas));
+    $(ban).click(function(){canvas.censor.call(canvas, ownerId)});
 }
 
 function createControlButton(subClass, icon) {

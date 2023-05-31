@@ -92,19 +92,25 @@ class Canvas {
         this.img.src = window.origin + "/" + src;
     }
 
-    censor() {
+    censor(userId) {
         if (this.consored) {
-            this.ctx.textAlign = "start";
+            if (window.blacklist.includes(userId)) {
+                window.blacklist = window.blacklist.filter(e => e != userId);
+            }
+            this.ctx.textAlign = 'start';
             this.restartCanvas();
             this.restore();
             this.consored = false;
         } else {
-            this.ctx.textAlign = "center";
+            if (userId && !window.blacklist.includes(userId)) {
+                window.blacklist.push(userId);
+            }
+            this.ctx.textAlign = 'center';
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.fillStyle = 'black';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.fillStyle = 'red';
-            this.ctx.font = this.canvas.height / 10 + "px Yanone-Regular";
+            this.ctx.font = this.canvas.height / 10 + 'px Yanone-Regular';
             this.ctx.fillText('Ну это бан!', this.canvas.width / 2, this.canvas.height / 2);
             this.consored = true;
         }

@@ -11,8 +11,12 @@ class Results {
     this.content.append(content);
 
     const container = createAndAppend('container py-5', content);
-    this.timer = new Timer(container);
-    this.timer.initTimer(50);
+    this.timer = new Timer(container, () => {
+            if (asLeader) {
+                window.blacklist.forEach(e => window.ws.kickPlayer(lobby.id, e));
+            }
+        });
+    this.timer.initTimer(49);
 
     const row = createAndAppend('row row-cols-1 row-cols-lg-12 justify-content-between g-3', container);
     let col = createAndAppend('col col-lg-6 order-2 order-lg-1 backgrounded', row);
@@ -45,6 +49,9 @@ class Results {
     const afterLoad = function () {
         for (let i = 0; i < meme.caps.length; i++) {
             canvas.draw(meme.lines[i], meme.caps[i]);
+        }
+        if (window.blacklist.includes(meme.playerId)) {
+            canvas.censor();
         }
     };
     canvas.initCanvas(col, afterLoad);

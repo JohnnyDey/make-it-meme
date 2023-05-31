@@ -72,14 +72,15 @@ public class LobbyController {
     public void kick(LobbyRequest request, Principal principal) {
         Lobby lobby = lobbyStorage.getLobby(request.getLobbyId());
         lobby.checkLeader(principal);
-        lobby.runInLock(
-                () -> {
-                    Player player = lobby.getPlayerById(request.getName());
-                    lobby.getPlayers().remove(player);
-                    notifyPlayers(lobby);
-                    template.convertAndSendToUser(
-                            player.getId(), "/lobby", new LobbyRequest("Вы были исключены лидером лобби."));
-                });
+        System.out.println("kick " + request.getName());
+    lobby.runInLock(
+        () -> {
+          Player player = lobby.getPlayerById(request.getName());
+          lobby.getPlayers().remove(player);
+          System.out.println("kick " + player.getName());
+          template.convertAndSendToUser(
+              player.getId(), "/lobby", new LobbyRequest("Вы были исключены лидером лобби."));
+        });
     }
 
     private void notifyPlayers(Lobby lobby) {
@@ -92,6 +93,7 @@ public class LobbyController {
 
     @MessageExceptionHandler
     public void test(Exception e, Principal principal) {
+        e.printStackTrace();
         template.convertAndSendToUser(
                 principal.getName(), "/lobby", new LobbyRequest(e.getMessage()));
     }
