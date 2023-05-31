@@ -1,0 +1,18 @@
+{
+  "img": "memes/meme216/meme.jpg",
+  "caps": [
+    {
+      "x": 53,
+      "y": 35,
+      "width": 492,
+      "height": 135
+    },
+
+    {
+      "x": 629,
+      "y": 15,
+      "width": 567,
+      "height": 175
+    }
+  ]
+}
