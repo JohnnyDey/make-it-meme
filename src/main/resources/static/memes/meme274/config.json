@@ -1,11 +1,23 @@
 {
-  "img": "memes/meme274/meme.jpg",
-  "caps": [
-    {
-      "x": 50,
-      "y": 10,
-      "width": 585,
-      "height": 150
-    }
-  ]
+    "img": "memes/meme274/meme.jpg",
+    "caps": [
+        {
+            "x": 10,
+            "y": 10,
+            "width": 550,
+            "height": 280,
+            "angle": null,
+            "maxFont": null,
+            "center": false
+        },
+        {
+            "x": 590,
+            "y": 10,
+            "width": 585,
+            "height": 280,
+            "angle": null,
+            "maxFont": null,
+            "center": false
+        }
+    ]
 }

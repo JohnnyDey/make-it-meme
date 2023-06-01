@@ -37,7 +37,9 @@ public class MemeStorage {
 
     public enum MemeCategory {
         CARTOON(100, 200),
-        ALL(100, 200);
+        COMICS(200, 286),
+
+        ALL(100, 286);
 
         final int start;
         final int end;
